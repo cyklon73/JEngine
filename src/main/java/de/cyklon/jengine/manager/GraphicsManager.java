@@ -1,5 +1,9 @@
 package de.cyklon.jengine.manager;
 
+import de.cyklon.jengine.render.IFontRenderer;
+
+import java.awt.*;
+
 public interface GraphicsManager {
 
     /**
@@ -58,4 +62,14 @@ public interface GraphicsManager {
      * @return the window manager
      */
     WindowManager getWindowManager();
+
+    /**
+     * @return the font renderer
+     */
+    IFontRenderer getFontRenderer();
+
+    /**
+     * set the render color
+     */
+    void setColor(Color color);
 }

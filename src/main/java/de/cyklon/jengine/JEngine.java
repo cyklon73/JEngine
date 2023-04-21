@@ -6,6 +6,7 @@ import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.render.DefaultCanvas;
 import de.cyklon.jengine.render.Frame;
+import de.cyklon.jengine.render.Panel;
 import de.cyklon.jengine.util.FinalObject;
 import de.cyklon.jengine.util.Vector;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class JEngine {
 
     private static double deltaTime;
     private static double UPDATE_RATE, UPDATE_INTERVAL, FPS;
+    private static Graphics2D graphics;
     private static final FinalObject<Thread> gameThread = new FinalObject<>();
     private static Frame frame;
     private static Logger logger;
@@ -47,7 +50,8 @@ public class JEngine {
      * @param name the name of your game
      */
     public static void start(String name) {
-        engine = new BaseEngine(createEngine());
+        JEngine jEngine = createEngine();
+        engine = new BaseEngine(jEngine);
         canvas = new DefaultCanvas();
         UPDATE_RATE = 60.0;
         UPDATE_INTERVAL = 1000000000 / UPDATE_RATE;
@@ -58,6 +62,10 @@ public class JEngine {
         frame.setName(name);
         frame.setTitle(name);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        Panel panel = new Panel(jEngine);
+        frame.add(panel);
+
+        //frame.pack();
 
         logger.info("init game loop");
         gameThread.set(new Thread(JEngine::gameLoop));
@@ -77,8 +85,6 @@ public class JEngine {
             if (UPDATE_RATE<0 || elapsed >= UPDATE_INTERVAL) {
                 lastUpdateTime = current;
                 deltaTime = elapsed / 1000000000.0;
-
-                canvas.loop();
 
                 frame.repaint();
             }
@@ -200,6 +206,35 @@ public class JEngine {
 
     public Canvas getCanvas() {
         return canvas;
+    }
+
+    public void setGraphics(Graphics2D g) {
+        graphics = g;
+        canvas.loop();
+    }
+
+    public void drawString(String str, float x, float y) {
+        graphics.drawString(str, x, y);
+    }
+
+    public void drawString(AttributedCharacterIterator iterator, float x, float y) {
+        graphics.drawString(iterator, x, y);
+    }
+
+    public void setFont(Font font) {
+        graphics.setFont(font);
+    }
+
+    public Font getFont() {
+        return graphics.getFont();
+    }
+
+    public void setRenderColor(Color color) {
+        graphics.setColor(color);
+    }
+
+    public Color getRenderColor() {
+        return graphics.getColor();
     }
 
     public void registerEvent(Event event) {

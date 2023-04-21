@@ -5,6 +5,7 @@ import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.manager.BaseManager;
 import de.cyklon.jengine.manager.GraphicsManager;
 import de.cyklon.jengine.render.Canvas;
+import de.cyklon.jengine.render.Renderer;
 import org.apache.logging.log4j.Logger;
 
 public class BaseEngine implements Engine {
@@ -13,6 +14,7 @@ public class BaseEngine implements Engine {
 
     public BaseEngine(JEngine jEngine) {
         BaseManager.setup(jEngine);
+        Renderer.setup(jEngine);
         this.engine = jEngine;
     }
 

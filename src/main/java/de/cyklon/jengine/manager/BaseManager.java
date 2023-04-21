@@ -1,6 +1,8 @@
 package de.cyklon.jengine.manager;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.render.IFontRenderer;
+import de.cyklon.jengine.render.Renderer;
 import de.cyklon.jengine.util.Vector;
 
 import java.awt.*;
@@ -48,6 +50,16 @@ public class BaseManager {
         @Override
         public WindowManager getWindowManager() {
             return new IWindowManager();
+        }
+
+        @Override
+        public IFontRenderer getFontRenderer() {
+            return new Renderer.FontRenderer();
+        }
+
+        @Override
+        public void setColor(Color color) {
+            engine.setRenderColor(color);
         }
     }
 
