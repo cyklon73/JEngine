@@ -19,4 +19,5 @@ public interface IFontRenderer {
     void drawStringWithShadow(Font font, String msg, double x, double y);
     void drawStringWithShadow(Font font, String msg, Vector vec);
 
+
 }

@@ -15,6 +15,7 @@ public class BaseManager {
         BaseManager.engine = engine;
     }
 
+
     public static class IGraphicsManager implements GraphicsManager {
 
         @Override

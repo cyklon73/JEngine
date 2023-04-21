@@ -14,8 +14,10 @@ public class Panel extends JPanel {
         this.engine = engine;
     }
 
+
     @Override
     protected void paintComponent(Graphics g) {
         engine.setGraphics((Graphics2D) g);
+
     }
 }

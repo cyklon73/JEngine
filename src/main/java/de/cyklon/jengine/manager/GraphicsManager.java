@@ -72,4 +72,5 @@ public interface GraphicsManager {
      * set the render color
      */
     void setColor(Color color);
+
 }
