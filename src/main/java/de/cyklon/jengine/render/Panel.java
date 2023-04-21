@@ -18,6 +18,5 @@ public class Panel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         engine.setGraphics((Graphics2D) g);
-
     }
 }
