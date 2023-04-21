@@ -22,61 +22,112 @@ public class Renderer {
         }
 
         @Override
-        public void drawString(String msg, double x, double y) {
-            engine.drawString(msg, (float) x, (float) y);
+        public void drawString(String str, double x, double y) {
+            engine.drawString(str, (float) x, (float) y);
         }
 
         @Override
-        public void drawString(String msg, Vector vec) {
-            drawString(msg, vec.getX(), vec.getY());
+        public void drawString(String str, Vector vec) {
+            drawString(str, vec.getX(), vec.getY());
         }
 
         @Override
-        public void drawString(Font font, String msg, double x, double y) {
+        public void drawString(Font font, String str, double x, double y) {
             Font f = engine.getFont();
             setFont(font);
-            drawString(msg, x, y);
+            drawString(str, x, y);
             setFont(f);
         }
 
         @Override
-        public void drawString(Font font, String msg, Vector vec) {
+        public void drawString(Font font, String str, Vector vec) {
             Font f = engine.getFont();
             setFont(font);
-            drawString(msg, vec);
+            drawString(str, vec);
             setFont(f);
         }
 
         @Override
-        public void drawStringWithShadow(String msg, double x, double y) {
+        public void drawStringWithShadow(String str, double x, double y) {
             Color normal = engine.getRenderColor();
-            engine.setRenderColor(normal.darker());
+            Color shadow = (normal.getRed() < 25 && normal.getGreen() < 25 && normal.getBlue() < 25) ? normal.brighter().brighter() : normal.darker();
+            engine.setRenderColor(shadow);
             int size = engine.getFont().getSize();
-            float factor = 12f;
-            drawString(msg, x+size/factor, y+size/factor);
+            float factor = 16f;
+            drawString(str, x+size/factor, y+size/factor);
             engine.setRenderColor(normal);
-            drawString(msg, x, y);
+            drawString(str, x, y);
         }
 
         @Override
-        public void drawStringWithShadow(String msg, Vector vec) {
-            drawStringWithShadow(msg, vec.getX(), vec.getY());
+        public void drawStringWithShadow(String str, Vector vec) {
+            drawStringWithShadow(str, vec.getX(), vec.getY());
         }
 
         @Override
-        public void drawStringWithShadow(Font font, String msg, double x, double y) {
+        public void drawStringWithShadow(Font font, String str, double x, double y) {
             Font f = engine.getFont();
             setFont(font);
-            drawStringWithShadow(msg, x, y);
+            drawStringWithShadow(str, x, y);
             setFont(f);
         }
 
         @Override
-        public void drawStringWithShadow(Font font, String msg, Vector vec) {
+        public void drawStringWithShadow(Font font, String str, Vector vec) {
             Font f = engine.getFont();
             setFont(font);
-            drawStringWithShadow(msg, vec);
+            drawStringWithShadow(str, vec);
             setFont(f);
+        }
+
+        @Override
+        public void drawCenteredString(String str, double x, double y) {
+            drawString(str, x-(stringWidth(str)/2f), y);
+        }
+
+        @Override
+        public void drawCenteredString(String str, Vector vec) {
+            drawCenteredString(str, vec.getX(), vec.getY());
+        }
+
+        @Override
+        public void drawCenteredString(Font font, String str, double x, double y) {
+            drawString(font, str, x-(stringWidth(font, str)/2f), y);
+        }
+
+        @Override
+        public void drawCenteredString(Font font, String str, Vector vec) {
+            drawCenteredString(font, str, vec.getX(), vec.getY());
+        }
+
+        @Override
+        public void drawCenteredStringWithShadow(String str, double x, double y) {
+            drawStringWithShadow(str, x-(stringWidth(str)/2f), y);
+        }
+
+        @Override
+        public void drawCenteredStringWithShadow(String str, Vector vec) {
+            drawCenteredStringWithShadow(str, vec.getX(), vec.getY());
+        }
+
+        @Override
+        public void drawCenteredStringWithShadow(Font font, String str, double x, double y) {
+            drawStringWithShadow(font, str, x-(stringWidth(font, str)/2f), y);
+        }
+
+        @Override
+        public void drawCenteredStringWithShadow(Font font, String str, Vector vec) {
+            drawCenteredStringWithShadow(font, str, vec.getX(), vec.getY());
+        }
+
+        @Override
+        public int stringWidth(String str) {
+            return engine.getFontMetrics().stringWidth(str);
+        }
+
+        @Override
+        public int stringWidth(Font font, String str) {
+            return engine.getFontMetrics(font).stringWidth(str);
         }
     }
 

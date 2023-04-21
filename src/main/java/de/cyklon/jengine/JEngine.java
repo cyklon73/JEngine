@@ -237,6 +237,14 @@ public class JEngine {
         return graphics.getColor();
     }
 
+    public FontMetrics getFontMetrics() {
+        return graphics.getFontMetrics();
+    }
+
+    public FontMetrics getFontMetrics(Font font) {
+        return graphics.getFontMetrics(font);
+    }
+
     public void registerEvent(Event event) {
         events.add(event);
     }
