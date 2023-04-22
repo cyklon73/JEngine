@@ -2,6 +2,7 @@ package de.cyklon.jengine.render;
 
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.manager.BaseManager;
+import de.cyklon.jengine.util.Pair;
 import de.cyklon.jengine.util.Vector;
 
 import java.awt.*;
@@ -12,6 +13,17 @@ public class Renderer {
 
     public static void setup(JEngine engine) {
         Renderer.engine = engine;
+    }
+
+    private static Pair<int[], int[]> splitVectorArray(Vector[] vecArray) {
+        int[] xPoints = new int[vecArray.length];
+        int[] yPoints = new int[vecArray.length];
+        for (int i = 0; i < vecArray.length; i++) {
+            Vector vec = vecArray[i];
+            xPoints[i] = (int) vec.getX();
+            yPoints[i] = (int) vec.getY();
+        }
+        return new Pair<>(xPoints, yPoints);
     }
 
     public static class FontRenderer implements IFontRenderer {
@@ -128,6 +140,72 @@ public class Renderer {
         @Override
         public int stringWidth(Font font, String str) {
             return engine.getFontMetrics(font).stringWidth(str);
+        }
+    }
+
+
+    public static class ShapeRenderer implements IShapeRenderer {
+
+        @Override
+        public void drawRect(int x, int y, int width, int height) {
+            engine.drawRect(x, y, width, height);
+        }
+
+        @Override
+        public void drawLine(int x1, int y1, int x2, int y2) {
+            engine.drawLine(x1, y1, x2, y2);
+        }
+
+        @Override
+        public void drawOval(int x, int y, int width, int height) {
+            engine.drawOval(x, y, width, height);
+        }
+
+        @Override
+        public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+            engine.drawPolyline(xPoints, yPoints, nPoints);
+        }
+
+        @Override
+        public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
+            engine.drawPolyline(xPoints, yPoints, nPoints);
+        }
+
+        @Override
+        public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+            engine.drawArc(x, y, width, height, startAngle, arcAngle);
+        }
+
+        @Override
+        public void drawRect(Vector vec, int width, int height) {
+            drawRect((int) vec.getX(), (int) vec.getY(), width, height);
+        }
+
+        @Override
+        public void drawLine(Vector vec1, Vector vec2) {
+            drawLine((int) vec1.getX(), (int) vec1.getY(), (int) vec2.getX(), (int) vec2.getY());
+        }
+
+        @Override
+        public void drawOval(Vector vec, int width, int height) {
+            drawOval((int) vec.getX(), (int) vec.getY(), width, height);
+        }
+
+        @Override
+        public void drawPolygon(Vector[] points, int nPoints) {
+            Pair<int[], int[]> pair = splitVectorArray(points);
+            drawPolygon(pair.getFirst(), pair.getSecond(), nPoints);
+        }
+
+        @Override
+        public void drawPolyline(Vector[] points, int nPoints) {
+            Pair<int[], int[]> pair = splitVectorArray(points);
+            drawPolyline(pair.getFirst(), pair.getSecond(), nPoints);
+        }
+
+        @Override
+        public void drawArc(Vector vec, int width, int height, int startAngle, int arcAngle) {
+            drawArc((int) vec.getX(), (int) vec.getY(), width, height, startAngle, arcAngle);
         }
     }
 

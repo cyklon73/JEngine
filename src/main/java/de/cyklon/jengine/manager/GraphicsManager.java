@@ -1,6 +1,7 @@
 package de.cyklon.jengine.manager;
 
 import de.cyklon.jengine.render.IFontRenderer;
+import de.cyklon.jengine.render.IShapeRenderer;
 
 import java.awt.*;
 
@@ -67,6 +68,11 @@ public interface GraphicsManager {
      * @return the font renderer
      */
     IFontRenderer getFontRenderer();
+
+    /**
+     * @return the shape renderer
+     */
+    IShapeRenderer getShapeRenderer();
 
     /**
      * set the render color

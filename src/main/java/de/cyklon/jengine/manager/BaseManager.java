@@ -3,6 +3,7 @@ package de.cyklon.jengine.manager;
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.render.IFontRenderer;
+import de.cyklon.jengine.render.IShapeRenderer;
 import de.cyklon.jengine.render.Renderer;
 import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.util.Vector;
@@ -60,6 +61,11 @@ public class BaseManager {
         @Override
         public IFontRenderer getFontRenderer() {
             return new Renderer.FontRenderer();
+        }
+
+        @Override
+        public IShapeRenderer getShapeRenderer() {
+            return new Renderer.ShapeRenderer();
         }
 
         @Override

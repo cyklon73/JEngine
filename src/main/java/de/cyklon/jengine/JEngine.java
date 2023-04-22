@@ -292,6 +292,30 @@ public class JEngine {
         return graphics.getColor();
     }
 
+    public void drawRect(int x, int y, int width, int height) {
+        graphics.drawRect(x, y, width, height);
+    }
+
+    public void drawLine(int x1, int y1, int x2, int y2) {
+        graphics.drawLine(x1, y1, x2, y2);
+    }
+
+    public void drawOval(int x, int y, int width, int height) {
+        graphics.drawOval(x, y, width, height);
+    }
+
+    public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+        graphics.drawPolygon(xPoints, yPoints, nPoints);
+    }
+
+    public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
+        graphics.drawPolyline(xPoints, yPoints, nPoints);
+    }
+
+    public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+        graphics.drawArc(x, y, width, height, startAngle, arcAngle);
+    }
+
     public FontMetrics getFontMetrics() {
         return graphics.getFontMetrics();
     }
