@@ -23,6 +23,7 @@ public class JEngine {
 
     private static boolean vsync = false;
     private static final FinalObject<Boolean> initalized = new FinalObject<>(2, false);
+    private static Class<?> gameClass;
     private static final List<Event> events = new ArrayList<>();
     private static boolean running = false;
 
@@ -30,6 +31,7 @@ public class JEngine {
     private static double UPDATE_RATE, UPDATE_INTERVAL, FPS;
     private static Graphics2D graphics;
     private static final FinalObject<Thread> gameThread = new FinalObject<>();
+    private static String name;
     private static Frame frame;
     private static Logger logger;
 
@@ -47,20 +49,20 @@ public class JEngine {
 
     /**
      * call this method in your main method at the top
-     * @param name the name of your game
      */
-    public static void start(String name) {
+    public static void start() throws ClassNotFoundException {
+        gameClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
         JEngine jEngine = createEngine();
         engine = new BaseEngine(jEngine);
         canvas = new DefaultCanvas();
         UPDATE_RATE = 60.0;
         UPDATE_INTERVAL = 1000000000 / UPDATE_RATE;
-        logger = LogManager.getLogger(name);
-        Configurator.initialize(name, "src/main/resources/log4j.xml");
+        logger = LogManager.getLogger(gameClass);
+        Configurator.initialize(gameClass.getSimpleName(), "src/main/resources/log4j.xml");
         logger.info("init frame");
+
         frame = new Frame();
-        frame.setName(name);
-        frame.setTitle(name);
+        setNameLocal(gameClass.getSimpleName());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Panel panel = new Panel(jEngine);
         frame.add(panel);
@@ -101,6 +103,17 @@ public class JEngine {
     public static Engine getEngine() {
         check();
         return engine;
+    }
+
+    private static void setNameLocal(String name) {
+        JEngine.name = name;
+        frame.setName(name);
+        frame.setTitle(name);
+    }
+
+    public void setName(String name) {
+        check();
+        setNameLocal(name);
     }
 
     private static void updateFPS() {
