@@ -3,9 +3,11 @@ package de.cyklon.jengine.manager;
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.render.IFontRenderer;
 import de.cyklon.jengine.render.Renderer;
+import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.util.Vector;
 
 import java.awt.*;
+import java.io.IOException;
 
 public class BaseManager {
 
@@ -124,6 +126,11 @@ public class BaseManager {
         @Override
         public boolean isBackgroundDraggable() {
             return engine.isBackgroundDraggable();
+        }
+
+        @Override
+        public void setIcon(Resource resource) throws IOException {
+            engine.setIcon(resource);
         }
     }
 

@@ -1,8 +1,10 @@
 package de.cyklon.jengine.manager;
 
+import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.util.Vector;
 
 import java.awt.*;
+import java.io.IOException;
 
 public interface WindowManager {
 
@@ -91,4 +93,10 @@ public interface WindowManager {
      * @return true if the game window's background is draggable, false otherwise
      */
     boolean isBackgroundDraggable();
+
+    /**
+     * set the game icon
+     * @param resource the resource file for the icon
+     */
+    void setIcon(Resource resource) throws IOException;
 }

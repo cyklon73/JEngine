@@ -7,14 +7,21 @@ import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.render.DefaultCanvas;
 import de.cyklon.jengine.render.Frame;
 import de.cyklon.jengine.render.Panel;
+import de.cyklon.jengine.resource.IResourceManager;
+import de.cyklon.jengine.resource.Resource;
+import de.cyklon.jengine.resource.ResourceManager;
 import de.cyklon.jengine.util.FinalObject;
 import de.cyklon.jengine.util.Vector;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +41,7 @@ public class JEngine {
     private static String name;
     private static Frame frame;
     private static Logger logger;
+    private static IResourceManager resourceManager;
 
     private static Canvas canvas;
 
@@ -47,32 +55,41 @@ public class JEngine {
 
     private static Engine engine;
 
+    public static synchronized void start() throws ClassNotFoundException {
+        gameClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+        start(null);
+    }
+
     /**
      * call this method in your main method at the top
      */
-    public static void start() throws ClassNotFoundException {
-        gameClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+    public static synchronized void start(String name) throws ClassNotFoundException {
+        if (gameClass==null) gameClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+        logger = LogManager.getLogger(gameClass);
+        LoggerContext context = Configurator.initialize(gameClass.getSimpleName(), "src/main/resources/log4j.xml");
+        context.getRootLogger().setLevel(Level.ALL);
+        logger.info("init JEngine");
         JEngine jEngine = createEngine();
         engine = new BaseEngine(jEngine);
         canvas = new DefaultCanvas();
         UPDATE_RATE = 60.0;
         UPDATE_INTERVAL = 1000000000 / UPDATE_RATE;
-        logger = LogManager.getLogger(gameClass);
-        Configurator.initialize(gameClass.getSimpleName(), "src/main/resources/log4j.xml");
-        logger.info("init frame");
 
+        logger.info("init frame");
         frame = new Frame();
-        setNameLocal(gameClass.getSimpleName());
+        setNameLocal(name==null ? gameClass.getSimpleName() : name);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Panel panel = new Panel(jEngine);
         frame.add(panel);
 
-        //frame.pack();
+        logger.info("init ResourceManager");
+        resourceManager = ResourceManager.getInstance(jEngine);
 
         logger.info("init game loop");
         gameThread.set(new Thread(JEngine::gameLoop));
 
         gameThread.get().start();
+        logger.info("initialization complete");
         initalized.set(true);
     }
 
@@ -111,9 +128,17 @@ public class JEngine {
         frame.setTitle(name);
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         check();
         setNameLocal(name);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public IResourceManager getResourceManager() {
+        return resourceManager;
     }
 
     private static void updateFPS() {
@@ -256,6 +281,14 @@ public class JEngine {
 
     public FontMetrics getFontMetrics(Font font) {
         return graphics.getFontMetrics(font);
+    }
+
+    public void setIcon(Resource resource) throws IOException {
+        try {
+            frame.setIconImage(new ImageIcon(resource.getBytes(), "").getImage());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void registerEvent(Event event) {
