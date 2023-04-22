@@ -1,6 +1,7 @@
 package de.cyklon.jengine.engine;
 
 import de.cyklon.jengine.event.Event;
+import de.cyklon.jengine.manager.EventManager;
 import de.cyklon.jengine.manager.GraphicsManager;
 import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.resource.IResourceManager;
@@ -51,5 +52,10 @@ public interface Engine {
      * @return the ResourceManager to manage your resources
      */
     IResourceManager getResourceManager();
+
+    /**
+     * @return the EventManager to register events
+     */
+    EventManager getEventManager();
 
 }

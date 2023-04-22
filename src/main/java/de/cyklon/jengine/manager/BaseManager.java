@@ -1,6 +1,7 @@
 package de.cyklon.jengine.manager;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.render.IFontRenderer;
 import de.cyklon.jengine.render.Renderer;
 import de.cyklon.jengine.resource.Resource;
@@ -8,6 +9,7 @@ import de.cyklon.jengine.util.Vector;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.List;
 
 public class BaseManager {
 
@@ -131,6 +133,19 @@ public class BaseManager {
         @Override
         public void setIcon(Resource resource) throws IOException {
             engine.setIcon(resource);
+        }
+    }
+
+    public static class IEventManager implements EventManager {
+
+        @Override
+        public void registerEvents(Event event) {
+            engine.registerEvent(event);
+        }
+
+        @Override
+        public <T> List<T> getEvents(Class<T> eventClass) {
+            return engine.getEvents(eventClass);
         }
     }
 

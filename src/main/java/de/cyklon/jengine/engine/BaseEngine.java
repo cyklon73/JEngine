@@ -3,6 +3,7 @@ package de.cyklon.jengine.engine;
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.manager.BaseManager;
+import de.cyklon.jengine.manager.EventManager;
 import de.cyklon.jengine.manager.GraphicsManager;
 import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.render.Renderer;
@@ -52,6 +53,11 @@ public class BaseEngine implements Engine {
     @Override
     public IResourceManager getResourceManager() {
         return engine.getResourceManager();
+    }
+
+    @Override
+    public EventManager getEventManager() {
+        return new BaseManager.IEventManager();
     }
 
 }
