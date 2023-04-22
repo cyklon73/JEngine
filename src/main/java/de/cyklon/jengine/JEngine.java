@@ -3,6 +3,7 @@ package de.cyklon.jengine;
 import de.cyklon.jengine.engine.BaseEngine;
 import de.cyklon.jengine.engine.Engine;
 import de.cyklon.jengine.event.Event;
+import de.cyklon.jengine.event.EventDispatcher;
 import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.render.DefaultCanvas;
 import de.cyklon.jengine.render.Frame;
@@ -40,10 +41,12 @@ public class JEngine {
     private static final FinalObject<Thread> gameThread = new FinalObject<>();
     private static String name;
     private static Frame frame;
+    private static EventDispatcher eventDispatcher;
     private static Logger logger;
     private static IResourceManager resourceManager;
 
     private static Canvas canvas;
+    private static boolean canvasInitalized;
 
     private JEngine() {
 
@@ -72,6 +75,8 @@ public class JEngine {
         JEngine jEngine = createEngine();
         engine = new BaseEngine(jEngine);
         canvas = new DefaultCanvas();
+        eventDispatcher = new EventDispatcher(engine);
+        canvasInitalized = false;
         UPDATE_RATE = 60.0;
         UPDATE_INTERVAL = 1000000000 / UPDATE_RATE;
 
@@ -81,6 +86,11 @@ public class JEngine {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Panel panel = new Panel(jEngine);
         frame.add(panel);
+
+        frame.addMouseMotionListener(eventDispatcher);
+        frame.addMouseWheelListener(eventDispatcher);
+        frame.addMouseListener(eventDispatcher);
+        frame.addKeyListener(eventDispatcher);
 
         logger.info("init ResourceManager");
         resourceManager = ResourceManager.getInstance(jEngine);
@@ -100,6 +110,11 @@ public class JEngine {
             long current = System.nanoTime();
             long elapsed = current - lastUpdateTime;
             updateFPS();
+
+            if (!canvasInitalized) {
+                canvas.init();
+                canvasInitalized = true;
+            }
 
             if (UPDATE_RATE<0 || elapsed >= UPDATE_INTERVAL) {
                 lastUpdateTime = current;
@@ -240,6 +255,8 @@ public class JEngine {
     public void setCanvas(Canvas c) {
         check();
         canvas = c;
+        registerEvent(c);
+        canvasInitalized = false;
     }
 
     public Canvas getCanvas() {
