@@ -3,6 +3,7 @@ package de.cyklon.jengine.engine;
 import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.manager.GraphicsManager;
 import de.cyklon.jengine.render.Canvas;
+import de.cyklon.jengine.resource.IResourceManager;
 import org.apache.logging.log4j.Logger;
 
 public interface Engine {
@@ -45,5 +46,10 @@ public interface Engine {
      * @return the current canvas
      */
     Canvas getCanvas();
+
+    /**
+     * @return the ResourceManager to manage your resources
+     */
+    IResourceManager getResourceManager();
 
 }

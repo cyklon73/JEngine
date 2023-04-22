@@ -6,6 +6,7 @@ import de.cyklon.jengine.manager.BaseManager;
 import de.cyklon.jengine.manager.GraphicsManager;
 import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.render.Renderer;
+import de.cyklon.jengine.resource.IResourceManager;
 import org.apache.logging.log4j.Logger;
 
 public class BaseEngine implements Engine {
@@ -46,6 +47,11 @@ public class BaseEngine implements Engine {
     @Override
     public Canvas getCanvas() {
         return engine.getCanvas();
+    }
+
+    @Override
+    public IResourceManager getResourceManager() {
+        return engine.getResourceManager();
     }
 
 }
