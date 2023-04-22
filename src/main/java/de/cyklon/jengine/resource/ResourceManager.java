@@ -1,9 +1,14 @@
 package de.cyklon.jengine.resource;
 
+import de.cyklon.jengine.JEngine;
+
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -11,13 +16,27 @@ import java.util.UUID;
 public class ResourceManager implements IResourceManager {
 
     private static IResourceManager INSTANCE;
+    private static JEngine engine;
     private final Map<String, Resource> resourceMap;
 
     private ResourceManager() {
         this.resourceMap = new HashMap<>();
+        String dir = engine.getName().replaceAll("\\s+", "_").toLowerCase();
+        /*URL url = getClass().getClassLoader().getResource(dir);
+        if (url == null) {
+            try {
+                URI uri = getClass().getClassLoader().getResource("").toURI();
+                Path path = Paths.get(uri).resolve(dir);
+                Files.createDirectories(path);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }*/
     }
 
-    public static synchronized IResourceManager getInstance() {
+    public static synchronized IResourceManager getInstance(JEngine engine) {
+        if (engine==null) throw new IllegalStateException("You have to start the engine first!");
+        ResourceManager.engine = engine;
         if (INSTANCE == null) INSTANCE = new ResourceManager();
         return INSTANCE;
     }
@@ -47,13 +66,12 @@ public class ResourceManager implements IResourceManager {
         resourceMap.remove(name);
     }
 
-    public int check() {
-        return 1;
+    private String getPath(String path) {
+        return engine.getName() + "/" + path;
     }
-
     private Resource initResource(final String name, final String path, final Resource.Type type) {
         final UUID id = UUID.randomUUID();
-        return new Resource() {
+        Resource r = new Resource() {
             @Override
             public Type getType() {
                 return type;
@@ -81,12 +99,12 @@ public class ResourceManager implements IResourceManager {
 
             @Override
             public URL getURL() throws MalformedURLException {
-                return getType()==Type.INTERNAL ? getClass().getClassLoader().getResource(getPath()) : getFile().toURI().toURL();
+                return getType()==Type.INTERNAL ? getClass().getClassLoader().getResource(ResourceManager.this.getPath(getPath())) : getFile().toURI().toURL();
             }
 
             @Override
             public InputStream getInputStream() throws FileNotFoundException {
-                InputStream in = getType()==Type.INTERNAL ? getClass().getClassLoader().getResourceAsStream(getPath()) : new FileInputStream(getFile());
+                InputStream in = getType()==Type.INTERNAL ? getClass().getClassLoader().getResourceAsStream(ResourceManager.this.getPath(getPath())) : new FileInputStream(getFile());
                 if (in==null) {
                     ResourceManager.this.unloadResource(getName());
                     throw new FileNotFoundException("Resource file from resource " + getName() + " (" + getResourceID() + ") not found. this resource is unloaded");
@@ -113,6 +131,20 @@ public class ResourceManager implements IResourceManager {
                        while ((length = in.read(buffer)) >= 0) out.write(buffer, 0, length);
                 }
             }
+
+            @Override
+            public byte[] getBytes() throws IOException {
+                byte[] bytes;
+                try (InputStream in = getInputStream(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                    byte[] buffer = new byte[4096];
+                    int length;
+                    while ((length = in.read(buffer)) >= 0) out.write(buffer, 0, length);
+                    bytes = out.toByteArray();
+                }
+                return bytes;
+            }
         };
+        resourceMap.put(name, r);
+        return r;
     }
 }

@@ -75,6 +75,11 @@ public interface Resource {
      */
     void export(File file, boolean replace) throws IOException;
 
+    /**
+     * @return the bytes of the resource file
+     */
+    byte[] getBytes() throws IOException;
+
     public static enum Type {
         INTERNAL,
         EXTERNAL
