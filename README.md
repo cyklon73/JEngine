@@ -13,7 +13,7 @@ A Java GameEngine for 2D Games
 | Asset Manager        | Load, Unload, and Hot Reload Game Assets                                                                                                                                                                                   |    ✅    |
 | Font Renderer        | Text, Centered Text, Text With Shadow...                                                                                                                                                                                   |    ✔    |
 | Events/Listener      | Keyboard, Mouse...                                                                                                                                                                                                         |    ✅    |
-| Widgets              | Buttons, Slider, Chechboxes...                                                                                                                                                                                             |    ✅    |
+| Widgets              | Buttons, Slider, Chechboxes...                                                                                                                                                                                             |    ❌    |
 
 ✅ is complete and satisfactory.
 
