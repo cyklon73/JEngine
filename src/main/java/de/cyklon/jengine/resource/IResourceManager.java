@@ -44,4 +44,10 @@ public interface IResourceManager {
      */
     void unloadResource(String name);
 
+    /**
+     * reload a loaded resource
+     * @param name the name of the resource to reload
+     */
+    Resource reloadResource(String name);
+
 }
