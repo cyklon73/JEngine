@@ -3,12 +3,15 @@ package de.cyklon.jengine.resource;
 import de.cyklon.jengine.JEngine;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -66,6 +69,14 @@ public class ResourceManager implements IResourceManager {
         resourceMap.remove(name);
     }
 
+    @Override
+    public Resource reloadResource(String name) {
+        Resource resource = getResource(name);
+        if (resource==null) return null;
+        unloadResource(name);
+        return loadResource(name, resource.getPath());
+    }
+
     private String getPath(String path) {
         return engine.getName() + "/" + path;
     }
@@ -115,6 +126,16 @@ public class ResourceManager implements IResourceManager {
             @Override
             public UUID getResourceID() {
                 return id;
+            }
+
+            @Override
+            public String getHash() throws IOException {
+                try {
+                    MessageDigest md = MessageDigest.getInstance("MD5");
+                    md.update(getBytes());
+                    return String.format("%032x", new BigInteger(1, md.digest()));
+                } catch (NoSuchAlgorithmException ignored) {}
+                return null;
             }
 
             @Override

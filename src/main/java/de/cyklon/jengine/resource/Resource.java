@@ -67,6 +67,7 @@ public interface Resource {
     String getHash() throws IOException;
 
 
+
     /**
      * export a loaded resource file to the external file system
      * <p>
