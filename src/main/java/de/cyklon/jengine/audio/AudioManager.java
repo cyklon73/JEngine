@@ -8,10 +8,19 @@ import java.io.IOException;
 
 public interface AudioManager {
 
-    void play(Audio audio) throws UnsupportedAudioFileException, IOException;
+    AudioTask play(AudioTask task);
+    AudioTask play(Audio audio);
 
-    void play(Resource resource) throws UnsupportedAudioFileException, IOException;
+    AudioTask play(Resource resource) throws UnsupportedAudioFileException;
+    AudioTask play(AudioTask task, boolean loop);
+    AudioTask play(Audio audio, boolean loop);
+
+    AudioTask play(Resource resource, boolean loop) throws UnsupportedAudioFileException;
 
     Audio audioFromResource(Resource resource) throws UnsupportedAudioFileException;
+
+    void stop(long id);
+
+    void stop(AudioTask task);
 
 }
