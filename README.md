@@ -6,7 +6,7 @@ A Java GameEngine for 2D Games
 
 | Feature              | Description                                                                                                                                                                                                                | Support |
 |:---------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------:|
-| Scriptable Behaviors | [Control GameObject state](examples/java/tech/fastj/examples/behaviors/Main.java)                                                                                                                                          |    ✅    |
+                                                                             |    ✅    |
 | Desktop Support      | Full Compatibility on Windows, Linux, and macOS                                                                                                                                                                            |    ✅    |
 | Audio Engine         | [Loading, Playing, and Controlling .wav, .ogg, .mp3 files](examples/java/tech/fastj/examples/audio/Main.java)                                                                                                              |    ✅    |
 | Image Support        | Image rendering, Spritesheet Creation                                                                                                                                                                                      |    ✅    |
