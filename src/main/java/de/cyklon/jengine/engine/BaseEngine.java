@@ -29,7 +29,7 @@ public class BaseEngine implements Engine {
 
     @Override
     public AudioManager getAudioManger() {
-        return new AudioPlayer();
+        return new AudioPlayer(engine);
     }
 
     @Override
