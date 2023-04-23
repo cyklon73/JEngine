@@ -50,12 +50,21 @@ public interface Resource {
     InputStream getInputStream() throws FileNotFoundException;
 
     /**
-     * each resource has a unique id.
+     * each resource object has a unique id.
      * <p>
-     * so you can better identify resources
+     * so you can better identify resources object
      * @return the unique resource id
      */
     UUID getResourceID();
+
+    /**
+     * each resource has a hash.
+     * <p>
+     * so you can identify a resource.
+     * <p>
+     * even if it's a different resource object, as long as it's the same resource the hash is the same
+     */
+    String getHash() throws IOException;
 
 
     /**
