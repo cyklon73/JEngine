@@ -12,6 +12,7 @@ import de.cyklon.jengine.resource.IResourceManager;
 import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.resource.ResourceManager;
 import de.cyklon.jengine.util.FinalObject;
+import de.cyklon.jengine.util.Task;
 import de.cyklon.jengine.util.Vector;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -25,7 +26,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JEngine {
 
@@ -33,6 +36,8 @@ public class JEngine {
     private static final FinalObject<Boolean> initalized = new FinalObject<>(2, false);
     private static Class<?> gameClass;
     private static final List<Event> events = new ArrayList<>();
+    private static final Map<Long, Task> tasks = new HashMap<>();
+    private static long taskID = 0;
     private static boolean running = false;
 
     private static double deltaTime;
@@ -330,6 +335,34 @@ public class JEngine {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+    public long getNextTaskID() {
+        final long id = taskID;
+        taskID++;
+        return id;
+    }
+
+    public void addTask(Task task) {
+        tasks.put(task.getID(), task);
+        task.getThread().start();
+    }
+
+    public void cancelTask(long id) {
+        Task task = tasks.get(id);
+        if (task!=null) {
+            task.getThread().interrupt();
+            removeTask(id);
+        }
+    }
+    public void removeTask(long id) {
+        Task task = tasks.get(id);
+        if (task!=null) task.finished();
+        tasks.remove(id);
+    }
+
+    public Task getTask(long id) {
+        return tasks.get(id);
     }
 
     public void registerEvent(Event event) {
