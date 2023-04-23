@@ -1,7 +1,9 @@
 package de.cyklon.jengine.engine;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.audio.AudioPlayer;
 import de.cyklon.jengine.event.Event;
+import de.cyklon.jengine.audio.AudioManager;
 import de.cyklon.jengine.manager.BaseManager;
 import de.cyklon.jengine.manager.EventManager;
 import de.cyklon.jengine.manager.GraphicsManager;
@@ -23,6 +25,11 @@ public class BaseEngine implements Engine {
     @Override
     public GraphicsManager getGraphicsManager() {
         return new BaseManager.IGraphicsManager();
+    }
+
+    @Override
+    public AudioManager getAudioManger() {
+        return new AudioPlayer();
     }
 
     @Override

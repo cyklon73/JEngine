@@ -1,6 +1,7 @@
 package de.cyklon.jengine.engine;
 
 import de.cyklon.jengine.event.Event;
+import de.cyklon.jengine.audio.AudioManager;
 import de.cyklon.jengine.manager.EventManager;
 import de.cyklon.jengine.manager.GraphicsManager;
 import de.cyklon.jengine.render.Canvas;
@@ -15,6 +16,12 @@ public interface Engine {
      * @return the graphics manager
      */
     GraphicsManager getGraphicsManager();
+
+    /**
+     * Gets the audio manager
+     * @return the graphics manager
+     */
+    AudioManager getAudioManger();
 
     /**
      * Gets the time elapsed since the last frame update in seconds.
