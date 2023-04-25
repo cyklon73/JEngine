@@ -23,7 +23,7 @@ public class EventDispatcher implements MouseListener, MouseWheelListener, Mouse
         this.eventManager = engine.getEventManager();
     }
 
-    private <T> void dispatchEvent(Class<T> eventClass, Consumer<T> consumer) {
+    private synchronized <T> void dispatchEvent(Class<T> eventClass, Consumer<T> consumer) {
         for (T e : eventManager.getEvents(eventClass)) consumer.accept(e);
     }
 
