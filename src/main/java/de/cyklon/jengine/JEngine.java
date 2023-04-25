@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class JEngine {
     private static EventDispatcher eventDispatcher;
     private static Logger logger;
     private static IResourceManager resourceManager;
-
+    private static Configuration configuration;
     private static Canvas canvas;
     private static boolean canvasInitalized;
 
@@ -63,19 +64,22 @@ public class JEngine {
 
     private static Engine engine;
 
-    public static synchronized void start() throws ClassNotFoundException {
+    public static synchronized void start() throws ClassNotFoundException, URISyntaxException {
         gameClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
-        start(null);
+        start(new Configuration());
     }
 
     /**
      * call this method in your main method at the top
      */
-    public static synchronized void start(String name) throws ClassNotFoundException {
+    public static synchronized void start(Configuration configuration) throws ClassNotFoundException, URISyntaxException {
         if (gameClass==null) gameClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+        configuration.mergeDefault(getDefaultConfiguration());
         logger = LogManager.getLogger(gameClass);
-        LoggerContext context = Configurator.initialize(gameClass.getSimpleName(), "src/main/resources/log4j.xml");
-        context.getRootLogger().setLevel(Level.ALL);
+        ClassLoader classLoader = JEngine.class.getClassLoader();
+        LoggerContext context = Configurator.initialize(gameClass.getSimpleName(), classLoader, classLoader.getResource("log4j.xml").toURI());
+        context.getConfiguration().getLoggerConfig(logger.getName()).setLevel((Level) configuration.get("log.level"));
+        context.updateLoggers();
         logger.info("init JEngine");
         JEngine jEngine = createEngine();
         engine = new BaseEngine(jEngine);
@@ -87,7 +91,7 @@ public class JEngine {
 
         logger.info("init frame");
         frame = new Frame();
-        setNameLocal(name==null ? gameClass.getSimpleName() : name);
+        setNameLocal(configuration.getString("name"));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Panel panel = new Panel(jEngine);
         frame.add(panel);
@@ -106,6 +110,13 @@ public class JEngine {
         gameThread.get().start();
         logger.info("initialization complete");
         initalized.set(true);
+    }
+
+    private static Configuration getDefaultConfiguration() {
+        Configuration defaultConfiguration = new Configuration();
+        defaultConfiguration.configure("name", gameClass.getSimpleName());
+        defaultConfiguration.configure("log.level", Level.ALL);
+        return defaultConfiguration;
     }
 
     private static void gameLoop() {
@@ -297,27 +308,32 @@ public class JEngine {
         return graphics.getColor();
     }
 
-    public void drawRect(int x, int y, int width, int height) {
-        graphics.drawRect(x, y, width, height);
+    private void draw(Shape shape, boolean filled) {
+       if (filled) graphics.fill(shape);
+       else graphics.draw(shape);
+    }
+
+    public void drawRect(int x, int y, int width, int height, boolean filled) {
+        draw(new Rectangle(x, y, width, height), filled);
     }
 
     public void drawLine(int x1, int y1, int x2, int y2) {
         graphics.drawLine(x1, y1, x2, y2);
     }
 
-    public void drawOval(int x, int y, int width, int height) {
+    public void drawOval(int x, int y, int width, int height, boolean filled) {
         graphics.drawOval(x, y, width, height);
     }
 
-    public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-        graphics.drawPolygon(xPoints, yPoints, nPoints);
+    public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints, boolean filled) {
+        draw(new Polygon(xPoints, yPoints, nPoints), filled);
     }
 
-    public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
+    public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints, boolean filled) {
         graphics.drawPolyline(xPoints, yPoints, nPoints);
     }
 
-    public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+    public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle, boolean filled) {
         graphics.drawArc(x, y, width, height, startAngle, arcAngle);
     }
 
