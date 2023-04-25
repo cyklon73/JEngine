@@ -147,8 +147,8 @@ public class Renderer {
     public static class ShapeRenderer implements IShapeRenderer {
 
         @Override
-        public void drawRect(int x, int y, int width, int height) {
-            engine.drawRect(x, y, width, height);
+        public void drawRect(int x, int y, int width, int height, boolean filled) {
+            engine.drawRect(x, y, width, height, filled);
         }
 
         @Override
@@ -157,28 +157,28 @@ public class Renderer {
         }
 
         @Override
-        public void drawOval(int x, int y, int width, int height) {
-            engine.drawOval(x, y, width, height);
+        public void drawOval(int x, int y, int width, int height, boolean filled) {
+            engine.drawOval(x, y, width, height, filled);
         }
 
         @Override
-        public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-            engine.drawPolyline(xPoints, yPoints, nPoints);
+        public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints, boolean filled) {
+            engine.drawPolyline(xPoints, yPoints, nPoints, filled);
         }
 
         @Override
-        public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-            engine.drawPolyline(xPoints, yPoints, nPoints);
+        public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints, boolean filled) {
+            engine.drawPolyline(xPoints, yPoints, nPoints, filled);
         }
 
         @Override
-        public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-            engine.drawArc(x, y, width, height, startAngle, arcAngle);
+        public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle, boolean filled) {
+            engine.drawArc(x, y, width, height, startAngle, arcAngle, filled);
         }
 
         @Override
-        public void drawRect(Vector vec, int width, int height) {
-            drawRect((int) vec.getX(), (int) vec.getY(), width, height);
+        public void drawRect(Vector vec, int width, int height, boolean filled) {
+            drawRect((int) vec.getX(), (int) vec.getY(), width, height, filled);
         }
 
         @Override
@@ -187,25 +187,25 @@ public class Renderer {
         }
 
         @Override
-        public void drawOval(Vector vec, int width, int height) {
-            drawOval((int) vec.getX(), (int) vec.getY(), width, height);
+        public void drawOval(Vector vec, int width, int height, boolean filled) {
+            drawOval((int) vec.getX(), (int) vec.getY(), width, height, filled);
         }
 
         @Override
-        public void drawPolygon(Vector[] points, int nPoints) {
+        public void drawPolygon(Vector[] points, int nPoints, boolean filled) {
             Pair<int[], int[]> pair = splitVectorArray(points);
-            drawPolygon(pair.getFirst(), pair.getSecond(), nPoints);
+            drawPolygon(pair.getFirst(), pair.getSecond(), nPoints, filled);
         }
 
         @Override
-        public void drawPolyline(Vector[] points, int nPoints) {
+        public void drawPolyline(Vector[] points, int nPoints, boolean filled) {
             Pair<int[], int[]> pair = splitVectorArray(points);
-            drawPolyline(pair.getFirst(), pair.getSecond(), nPoints);
+            drawPolyline(pair.getFirst(), pair.getSecond(), nPoints, filled);
         }
 
         @Override
-        public void drawArc(Vector vec, int width, int height, int startAngle, int arcAngle) {
-            drawArc((int) vec.getX(), (int) vec.getY(), width, height, startAngle, arcAngle);
+        public void drawArc(Vector vec, int width, int height, int startAngle, int arcAngle, boolean filled) {
+            drawArc((int) vec.getX(), (int) vec.getY(), width, height, startAngle, arcAngle, filled);
         }
     }
 

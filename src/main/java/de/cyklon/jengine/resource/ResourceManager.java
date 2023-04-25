@@ -25,6 +25,8 @@ public class ResourceManager implements IResourceManager {
     private ResourceManager() {
         this.resourceMap = new HashMap<>();
         String dir = engine.getName().replaceAll("\\s+", "_").toLowerCase();
+        URL resource = getClass().getClassLoader().getResource(dir);
+
         /*URL url = getClass().getClassLoader().getResource(dir);
         if (url == null) {
             try {
@@ -78,7 +80,7 @@ public class ResourceManager implements IResourceManager {
     }
 
     private String getPath(String path) {
-        return engine.getName() + "/" + path;
+        return engine.getName().toLowerCase() + "/" + path;
     }
     private Resource initResource(final String name, final String path, final Resource.Type type) {
         final UUID id = UUID.randomUUID();
