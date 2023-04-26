@@ -79,4 +79,8 @@ public interface GraphicsManager {
      */
     void setColor(Color color);
 
+    Dimension getScreenSize();
+
+    void dispose();
+
 }
