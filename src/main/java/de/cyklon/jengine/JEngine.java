@@ -357,7 +357,7 @@ public class JEngine {
         frame.setMinimumSize(min);
     }
 
-    public Dimension getMaximumSize() {
+    public Dimension getMaxSize() {
         check();
         return frame.getMaximumSize();
     }
