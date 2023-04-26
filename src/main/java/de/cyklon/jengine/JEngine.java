@@ -37,6 +37,7 @@ public class JEngine {
     private static final FinalObject<Boolean> initalized = new FinalObject<>(2, false);
     private static Class<?> gameClass;
     private static final List<Event> events = new ArrayList<>();
+    private static Event canvasEvent = null;
     private static final Map<Long, Task> tasks = new HashMap<>();
     private static long taskID = 0;
     private static boolean running = false;
@@ -272,7 +273,7 @@ public class JEngine {
     public void setCanvas(Canvas c) {
         check();
         canvas = c;
-        registerEvent(c);
+        canvasEvent = canvas;
         canvasInitalized = false;
     }
 
@@ -408,6 +409,8 @@ public class JEngine {
         return tasks.get(id);
     }
 
+
+
     public void registerEvent(Event event) {
         events.add(event);
     }
@@ -418,6 +421,7 @@ public class JEngine {
         for (Event e : events) {
             if (isEvent(e, eventClass)) result.add((T) e);
         }
+        if (isEvent(canvasEvent, eventClass)) result.add((T) canvasEvent);
         return result;
     }
 
