@@ -72,6 +72,16 @@ public class BaseManager {
         public void setColor(Color color) {
             engine.setRenderColor(color);
         }
+
+        @Override
+        public Dimension getScreenSize() {
+            return Toolkit.getDefaultToolkit().getScreenSize();
+        }
+
+        @Override
+        public void dispose() {
+            engine.dispose();
+        }
     }
 
     public static class IWindowManager implements WindowManager {
@@ -139,6 +149,23 @@ public class BaseManager {
         @Override
         public void setIcon(Resource resource) throws IOException {
             engine.setIcon(resource);
+        }
+
+        @Override
+        public void setMaxSize(Dimension max) {
+            engine.setMaxSize(max);
+        }
+
+        @Override
+        public void setMinSize(Dimension min) {
+            engine.setMinSize(min);
+        }
+
+        @Override
+        public void setToCenter() {
+            Dimension d1 = Toolkit.getDefaultToolkit().getScreenSize(), d2 = engine.getDimension();
+            double w1 = d1.getWidth(), h1 = d1.getHeight(), w2 = d2.getWidth(), h2 = d2.getHeight();
+            setLocation(new Vector(w1/2-w2/2, h1/2-h2/2));
         }
     }
 
