@@ -102,6 +102,8 @@ public interface WindowManager {
 
     void setMaxSize(Dimension max);
     void setMinSize(Dimension min);
+    Dimension getMaxSize();
+    Dimension getMinSize();
 
     void setToCenter();
 }

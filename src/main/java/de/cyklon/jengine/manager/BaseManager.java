@@ -162,6 +162,16 @@ public class BaseManager {
         }
 
         @Override
+        public Dimension getMaxSize() {
+            return engine.getMaxSize();
+        }
+
+        @Override
+        public Dimension getMinSize() {
+            return engine.getMinSize();
+        }
+
+        @Override
         public void setToCenter() {
             Dimension d1 = Toolkit.getDefaultToolkit().getScreenSize(), d2 = engine.getDimension();
             double w1 = d1.getWidth(), h1 = d1.getHeight(), w2 = d2.getWidth(), h2 = d2.getHeight();

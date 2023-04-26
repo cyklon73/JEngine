@@ -206,6 +206,7 @@ public class JEngine {
     public void  setDimension(Dimension dimension) {
         check();
         frame.setSize(dimension);
+        frame.setPreferredSize(dimension);
     }
 
     public Vector getLocation() {
@@ -348,11 +349,22 @@ public class JEngine {
     public void setMaxSize(Dimension max) {
         check();
         frame.setMaximumSize(max);
+        frame.setMaximizedBounds(new Rectangle());
     }
 
     public void setMinSize(Dimension min) {
         check();
         frame.setMinimumSize(min);
+    }
+
+    public Dimension getMaximumSize() {
+        check();
+        return frame.getMaximumSize();
+    }
+
+    public Dimension getMinSize() {
+        check();
+        return frame.getMinimumSize();
     }
 
     public void dispose() {
