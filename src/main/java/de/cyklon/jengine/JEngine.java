@@ -345,6 +345,21 @@ public class JEngine {
         return graphics.getFontMetrics(font);
     }
 
+    public void setMaxSize(Dimension max) {
+        check();
+        frame.setMaximumSize(max);
+    }
+
+    public void setMinSize(Dimension min) {
+        check();
+        frame.setMinimumSize(min);
+    }
+
+    public void dispose() {
+        check();
+        frame.dispose();
+    }
+
     public void setIcon(Resource resource) throws IOException {
         try {
             frame.setIconImage(new ImageIcon(resource.getBytes(), "").getImage());
