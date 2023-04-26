@@ -99,4 +99,9 @@ public interface WindowManager {
      * @param resource the resource file for the icon
      */
     void setIcon(Resource resource) throws IOException;
+
+    void setMaxSize(Dimension max);
+    void setMinSize(Dimension min);
+
+    void setToCenter();
 }
