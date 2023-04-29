@@ -12,8 +12,9 @@ import java.util.Map;
 public class AudioPlayer implements AudioManager {
 
     private final JEngine engine;
-    private final Map<Long, Long> stopped = new HashMap<>();
-    private final Map<Long, Runnable> finishListener = new HashMap<>();
+    private static final Map<Long, AudioData> data = new HashMap<>();
+    private static final Map<Long, AudioSetting> audioSettings = new HashMap<>();
+    private static long audioID = 0;
 
     public AudioPlayer(JEngine engine) {
         if (engine==null) throw new RuntimeException("Engine cannot be null");
@@ -48,15 +49,33 @@ public class AudioPlayer implements AudioManager {
         return createTask(id, loop, () -> {
             do {
                 try (AudioInputStream audioStream = audio.getAudioStream();) {
+                    AudioSetting setting = getSetting(audio.getID());
+                    if (setting.volume()<-56) throw new IllegalArgumentException("Minimum Volume is -56. the Volume " + setting.volume() + " is not allowed!");
+                    if (setting.volume()>30) throw new IllegalArgumentException("Maximum Volume is 30. the Volume " + setting.volume() + " is not allowed!");
+
                     AudioFormat baseFormat = audioStream.getFormat();
-                    AudioFormat targetFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate(), 16, baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
+                    AudioFormat targetFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, baseFormat.getSampleRate()*setting.pitch(), 16, baseFormat.getChannels(), baseFormat.getChannels() * 2, baseFormat.getSampleRate()*setting.pitch(), false);
                     AudioInputStream din = AudioSystem.getAudioInputStream(targetFormat, audioStream);
                     SourceDataLine line = AudioSystem.getSourceDataLine(targetFormat);
                     line.open(targetFormat);
+
+                    FloatControl panControl = (FloatControl) line.getControl(FloatControl.Type.PAN);
+                    panControl.setValue(Math.min(Math.max(setting.pan(), panControl.getMinimum()), panControl.getMinimum()));
+
+                    FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+                    gainControl.setValue(setting.volume()-30+gainControl.getMaximum());
+
                     line.start();
                     byte[] data = new byte[4096];
                     int nBytesRead;
+                    final int volumeFactor = 8;
                     while ((nBytesRead = din.read(data, 0, data.length)) >= 0 && engine.getTask(id)!=null) {
+                        for (int i = 0; i < nBytesRead; i += volumeFactor) {
+                            short sample = (short) ((data[i+1] << 8) | (data[i] & 0xff));
+                            sample = (short) Math.min(Short.MAX_VALUE, Math.max(Short.MIN_VALUE, sample * volumeFactor));
+                            data[i] = (byte) (sample & 0xff);
+                            data[i+1] = (byte) ((sample >> 8) & 0xff);
+                        }
                         line.write(data, 0, nBytesRead);
                     }
                     line.drain();
@@ -76,11 +95,18 @@ public class AudioPlayer implements AudioManager {
     }
 
     @Override
-    public Audio audioFromResource(Resource resource) throws UnsupportedAudioFileException {
+    public Audio audioFromResource(final Resource resource) throws UnsupportedAudioFileException {
         String[] args = resource.getPath().split("\\.");
         final AudioType af = AudioType.getFromExtension(args[args.length-1]);
         if (af==null) throw new UnsupportedAudioFileException(args[args.length-1] + " is not supported. yous see a list of all supported types in de.cyklon.jengine.audio.AudioFormat");
+        final long id = audioID;
+        audioID++;
         return new Audio() {
+            @Override
+            public long getID() {
+                return id;
+            }
+
             @Override
             public Resource getResource() {
                 return resource;
@@ -103,6 +129,40 @@ public class AudioPlayer implements AudioManager {
             @Override
             public AudioInputStream getAudioStream() throws IOException, UnsupportedAudioFileException {
                 return AudioSystem.getAudioInputStream(resource.getInputStream());
+            }
+
+            @Override
+            public AudioTask play() {
+                return AudioPlayer.this.play(this);
+            }
+
+            @Override
+            public Audio setLoop(boolean loop) {
+                AudioPlayer.this.setLoop(getID(), loop);
+                return this;
+            }
+
+            @Override
+            public Audio setVolume(float volume) {
+                AudioPlayer.this.setVolume(getID(), volume);
+                return this;
+            }
+
+            @Override
+            public Audio setPitch(float pitch) {
+                AudioPlayer.this.setPitch(getID(), pitch);
+                return this;
+            }
+
+            @Override
+            public Audio setPan(float pan) {
+                AudioPlayer.this.setPan(getID(), pan);
+                return this;
+            }
+
+            @Override
+            public boolean isLoop() {
+                return AudioPlayer.this.getSetting(getID()).loop();
             }
         };
     }
@@ -138,7 +198,7 @@ public class AudioPlayer implements AudioManager {
 
             @Override
             public Long getStopTime() {
-                return stopped.getOrDefault(getID(), -1L);
+                return getData(getID()).stopped();
             }
 
             @Override
@@ -150,17 +210,17 @@ public class AudioPlayer implements AudioManager {
 
             @Override
             public boolean isFinished() {
-                return stopped.get(getID())!=null;
+                return getData(getID()).stopped()!=-1;
             }
 
             @Override
             public void setFinishedListener(Runnable runnable) {
-                finishListener.put(getID(), runnable);
+                setData(getID(), runnable);
             }
 
             @Override
             public Runnable getFinishedListener() {
-                return finishListener.getOrDefault(getID(), () -> {});
+                return getData(getID()).finishedListener();
             }
 
             @Override
@@ -176,7 +236,7 @@ public class AudioPlayer implements AudioManager {
             @Override
             public void finished() {
                 if (!isFinished()) {
-                    stopped.put(getID(), System.currentTimeMillis());
+                    setData(getID(), System.currentTimeMillis());
                     getFinishedListener().run();
                 }
             }
@@ -184,4 +244,81 @@ public class AudioPlayer implements AudioManager {
         engine.addTask(task);
         return task;
     }
+
+    private void setData(long id, Runnable finishedListener) {
+        data.put(id, setFinishedListener(data.getOrDefault(id, new AudioData(null, -1, null)), finishedListener));
+    }
+
+    private void setData(long id, long stopped) {
+        data.put(id, setStopped(data.getOrDefault(id, new AudioData(null, -1, null)), stopped));
+    }
+
+    private void setData(long id, Audio audio) {
+        data.put(id, setAudio(data.getOrDefault(id, new AudioData(null, -1, null)), audio));
+    }
+
+    private AudioData setFinishedListener(AudioData data, Runnable finishedListener) {
+        return new AudioData(data.audio(), data.stopped(), finishedListener);
+    }
+
+    private AudioData setStopped(AudioData data, long stopped) {
+        return new AudioData(data.audio(), stopped, data.finishedListener());
+    }
+
+    private AudioData setAudio(AudioData data, Audio audio) {
+        return new AudioData(audio, data.stopped(), data.finishedListener());
+    }
+
+    private AudioData getData(long id) {
+        AudioData audiData = data.get(id);
+        if (audiData==null) {
+            audiData = new AudioData(null, -1, () -> {});
+            data.put(id, audiData);
+        }
+        return audiData;
+    }
+
+    private AudioSetting getSetting(long id) {
+        AudioSetting setting = audioSettings.get(id);
+        if (setting==null) {
+            setting = new AudioSetting(false, 1.0F, 1.0F, 0.0F);
+            audioSettings.put(id, setting);
+        }
+        return setting;
+    }
+
+    private AudioSetting setLoop(AudioSetting setting, boolean loop) {
+        return new AudioSetting(loop, setting.volume(), setting.pitch(), setting.pan());
+    }
+
+    private AudioSetting setVolume(AudioSetting setting, float volume) {
+        return new AudioSetting(setting.loop(), volume, setting.pitch(), setting.pan());
+    }
+
+    private AudioSetting setPitch(AudioSetting setting, float pitch) {
+        return new AudioSetting(setting.loop(), setting.volume(), pitch, setting.pan());
+    }
+
+    private AudioSetting setPan(AudioSetting setting, float pan) {
+        return new AudioSetting(setting.loop(), setting.volume(), setting.pitch(), pan);
+    }
+
+    private void setLoop(long id, boolean loop) {
+        audioSettings.put(id, setLoop(getSetting(id), loop));
+    }
+
+    private void setVolume(long id, float volume) {
+        audioSettings.put(id, setVolume(getSetting(id), volume));
+    }
+
+    private void setPitch(long id, float pitch) {
+        audioSettings.put(id, setPitch(getSetting(id), pitch));
+    }
+
+    private void setPan(long id, float pan) {
+        audioSettings.put(id, setPan(getSetting(id), pan));
+    }
+
+    private record AudioData(Audio audio, long stopped, Runnable finishedListener) {}
+    private record AudioSetting(boolean loop, float volume, float pitch, float pan) {}
 }

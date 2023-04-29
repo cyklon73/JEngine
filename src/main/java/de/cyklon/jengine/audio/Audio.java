@@ -9,6 +9,11 @@ import java.io.IOException;
 public interface Audio {
 
     /**
+     * you can completely ignore this method, its only important for intern usage
+     */
+    long getID();
+
+    /**
      * @return the resource file of the audio
      */
     Resource getResource();
@@ -27,5 +32,14 @@ public interface Audio {
      * @return a audio stream from the audio file
      */
     AudioInputStream getAudioStream() throws IOException, UnsupportedAudioFileException;
+
+    AudioTask play();
+
+    Audio setLoop(boolean loop);
+    Audio setVolume(float volume);
+    Audio setPitch(float pitch);
+    Audio setPan(float pan);
+
+    boolean isLoop();
 
 }

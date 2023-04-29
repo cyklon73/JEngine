@@ -1,7 +1,9 @@
 package de.cyklon.jengine.resource;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.audio.Audio;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -165,6 +167,11 @@ public class ResourceManager implements IResourceManager {
                     bytes = out.toByteArray();
                 }
                 return bytes;
+            }
+
+            @Override
+            public Audio getAudio() throws UnsupportedAudioFileException {
+                return JEngine.getEngine().getAudioManger().audioFromResource(this);
             }
         };
         resourceMap.put(name, r);

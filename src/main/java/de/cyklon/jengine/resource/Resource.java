@@ -1,5 +1,8 @@
 package de.cyklon.jengine.resource;
 
+import de.cyklon.jengine.audio.Audio;
+
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -89,6 +92,11 @@ public interface Resource {
      * @return the bytes of the resource file
      */
     byte[] getBytes() throws IOException;
+
+    /**
+     * @return the resource as audio.
+     */
+    Audio getAudio() throws UnsupportedAudioFileException;
 
     public static enum Type {
         INTERNAL,
