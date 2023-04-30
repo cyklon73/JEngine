@@ -4,6 +4,7 @@ import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.resource.Resource;
 
 import javax.sound.sampled.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class AudioPlayer implements AudioManager {
     }
 
     @Override
-    public AudioTask play(Resource resource) throws UnsupportedAudioFileException {
+    public AudioTask play(Resource resource) throws UnsupportedAudioFileException, IOException {
         return play(resource, false);
     }
 
@@ -81,7 +82,7 @@ public class AudioPlayer implements AudioManager {
                     line.drain();
                     line.stop();
                     din.close();
-                } catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+                } catch (LineUnavailableException | IOException e) {
                     e.printStackTrace();
                 }
             } while (loop && engine.getTask(id)!=null);
@@ -90,17 +91,20 @@ public class AudioPlayer implements AudioManager {
     }
 
     @Override
-    public AudioTask play(Resource resource, boolean loop) throws UnsupportedAudioFileException {
+    public AudioTask play(Resource resource, boolean loop) throws UnsupportedAudioFileException, IOException {
         return play(audioFromResource(resource), loop);
     }
 
     @Override
-    public Audio audioFromResource(final Resource resource) throws UnsupportedAudioFileException {
+    public Audio audioFromResource(final Resource resource) throws UnsupportedAudioFileException, IOException {
         String[] args = resource.getPath().split("\\.");
         final AudioType af = AudioType.getFromExtension(args[args.length-1]);
         if (af==null) throw new UnsupportedAudioFileException(args[args.length-1] + " is not supported. yous see a list of all supported types in de.cyklon.jengine.audio.AudioFormat");
         final long id = audioID;
         audioID++;
+        final long length;
+        final AudioInputStream ais = AudioSystem.getAudioInputStream(resource.getInputStream());
+        length = (long) ((ais.getFrameLength()/ ais.getFormat().getFrameRate())*1000);
         return new Audio() {
             @Override
             public long getID() {
@@ -118,17 +122,13 @@ public class AudioPlayer implements AudioManager {
             }
 
             @Override
-            public long getLength() throws IOException {
-                try {
-                    AudioInputStream audioStream = getAudioStream();
-                    return (long) ((audioStream.getFrameLength()/audioStream.getFormat().getFrameRate())*1000);
-                } catch (UnsupportedAudioFileException ignored) {} //impossible
-                return 0;
+            public long getLength() {
+                return length;
             }
 
             @Override
-            public AudioInputStream getAudioStream() throws IOException, UnsupportedAudioFileException {
-                return AudioSystem.getAudioInputStream(resource.getInputStream());
+            public AudioInputStream getAudioStream() {
+                return ais;
             }
 
             @Override

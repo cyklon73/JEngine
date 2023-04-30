@@ -26,12 +26,12 @@ public interface Audio {
     /**
      * @return the length of the Audio in milliseconds
      */
-    long getLength() throws UnsupportedAudioFileException, IOException;
+    long getLength();
 
     /**
      * @return a audio stream from the audio file
      */
-    AudioInputStream getAudioStream() throws IOException, UnsupportedAudioFileException;
+    AudioInputStream getAudioStream();
 
     AudioTask play();
 
