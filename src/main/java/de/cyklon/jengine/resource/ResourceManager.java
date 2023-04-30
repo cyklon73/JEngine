@@ -2,6 +2,8 @@ package de.cyklon.jengine.resource;
 
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.audio.Audio;
+import de.cyklon.jengine.exeption.UnsupportedFileException;
+import de.cyklon.jengine.render.sprite.Sprite;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
@@ -169,6 +171,11 @@ public class ResourceManager implements IResourceManager {
             @Override
             public Audio getAudio() throws UnsupportedAudioFileException, IOException {
                 return JEngine.getEngine().getAudioManger().audioFromResource(this);
+            }
+
+            @Override
+            public Sprite getSprite() throws IOException, UnsupportedFileException {
+                return JEngine.getEngine().getGraphicsManager().getSpriteRenderer().spriteFromResource(this);
             }
         };
         resourceMap.put(name, r);
