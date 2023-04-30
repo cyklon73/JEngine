@@ -11,6 +11,7 @@ public interface AudioManager {
     AudioTask play(AudioTask task);
     AudioTask play(Audio audio);
 
+
     AudioTask play(Resource resource) throws UnsupportedAudioFileException, IOException;
     AudioTask play(AudioTask task, boolean loop);
     AudioTask play(Audio audio, boolean loop);
