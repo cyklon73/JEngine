@@ -5,10 +5,13 @@ import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.render.IFontRenderer;
 import de.cyklon.jengine.render.IShapeRenderer;
 import de.cyklon.jengine.render.Renderer;
+import de.cyklon.jengine.render.sprite.ISpriteRenderer;
+import de.cyklon.jengine.render.sprite.SpriteBaseRenderer;
 import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.util.Vector;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -69,6 +72,11 @@ public class BaseManager {
         }
 
         @Override
+        public ISpriteRenderer getSpriteRenderer() {
+            return SpriteBaseRenderer.getSpriteRenderer();
+        }
+
+        @Override
         public void setColor(Color color) {
             engine.setRenderColor(color);
         }
@@ -81,6 +89,11 @@ public class BaseManager {
         @Override
         public void dispose() {
             engine.dispose();
+        }
+
+        @Override
+        public BufferedImage takeScreenshot() {
+            return engine.takeScreenshot();
         }
     }
 

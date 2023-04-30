@@ -96,7 +96,7 @@ public interface Resource {
     /**
      * @return the resource as audio.
      */
-    Audio getAudio() throws UnsupportedAudioFileException;
+    Audio getAudio() throws UnsupportedAudioFileException, IOException;
 
     public static enum Type {
         INTERNAL,

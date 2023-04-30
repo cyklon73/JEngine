@@ -2,8 +2,10 @@ package de.cyklon.jengine.manager;
 
 import de.cyklon.jengine.render.IFontRenderer;
 import de.cyklon.jengine.render.IShapeRenderer;
+import de.cyklon.jengine.render.sprite.ISpriteRenderer;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public interface GraphicsManager {
 
@@ -75,6 +77,11 @@ public interface GraphicsManager {
     IShapeRenderer getShapeRenderer();
 
     /**
+     * @return the sprite renderer
+     */
+    ISpriteRenderer getSpriteRenderer();
+
+    /**
      * set the render color
      */
     void setColor(Color color);
@@ -82,5 +89,7 @@ public interface GraphicsManager {
     Dimension getScreenSize();
 
     void dispose();
+
+    BufferedImage takeScreenshot();
 
 }

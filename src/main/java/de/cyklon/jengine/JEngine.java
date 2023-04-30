@@ -4,8 +4,8 @@ import de.cyklon.jengine.engine.BaseEngine;
 import de.cyklon.jengine.engine.Engine;
 import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.event.EventDispatcher;
+import de.cyklon.jengine.render.*;
 import de.cyklon.jengine.render.Canvas;
-import de.cyklon.jengine.render.DefaultCanvas;
 import de.cyklon.jengine.render.Frame;
 import de.cyklon.jengine.render.Panel;
 import de.cyklon.jengine.resource.IResourceManager;
@@ -14,6 +14,7 @@ import de.cyklon.jengine.resource.ResourceManager;
 import de.cyklon.jengine.util.FinalObject;
 import de.cyklon.jengine.util.Task;
 import de.cyklon.jengine.util.Vector;
+import lombok.Getter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +23,8 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -45,6 +48,7 @@ public class JEngine {
     private static double UPDATE_RATE, UPDATE_INTERVAL, FPS;
     private static Graphics2D graphics;
     private static final FinalObject<Thread> gameThread = new FinalObject<>();
+    @Getter
     private static String name;
     private static Frame frame;
     private static EventDispatcher eventDispatcher;
@@ -88,6 +92,7 @@ public class JEngine {
         canvasInitalized = false;
         UPDATE_RATE = 60.0;
         UPDATE_INTERVAL = 1000000000 / UPDATE_RATE;
+        graphics = new EmptyGraphics();
 
         logger.info("init frame");
         frame = new Frame();
@@ -162,10 +167,6 @@ public class JEngine {
     private void setName(String name) {
         check();
         setNameLocal(name);
-    }
-
-    public String getName() {
-        return name;
     }
 
     public IResourceManager getResourceManager() {
@@ -280,6 +281,7 @@ public class JEngine {
     }
 
     public void setGraphics(Graphics2D g) {
+        graphics.dispose();
         graphics = g;
         canvas.loop();
     }
@@ -337,6 +339,15 @@ public class JEngine {
         graphics.drawArc(x, y, width, height, startAngle, arcAngle);
     }
 
+    public void drawImage(Image img, int x, int y) {
+        graphics.drawImage(img, x, y, getRenderColor(), null);
+    }
+
+    public void drawImage(Image img, int x, int y, int width, int height) {
+        graphics.drawImage(img, x, y, width, height, getRenderColor(), null);
+    }
+
+
     public FontMetrics getFontMetrics() {
         return graphics.getFontMetrics();
     }
@@ -372,6 +383,7 @@ public class JEngine {
     }
 
     public void setIcon(Resource resource) throws IOException {
+        check();
         try {
             frame.setIconImage(new ImageIcon(resource.getBytes(), "").getImage());
         } catch (MalformedURLException e) {
@@ -431,6 +443,17 @@ public class JEngine {
             }
         }
         return false;
+    }
+
+    public BufferedImage takeScreenshot() {
+        Component comp = frame;
+        Dimension size = comp.getSize();
+        BufferedImage image = new BufferedImage(
+                size.width, size.height
+                , BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = image.createGraphics();
+        comp.paintAll(g2);
+        return image;
     }
 
     private static GraphicsDevice getScreen() {

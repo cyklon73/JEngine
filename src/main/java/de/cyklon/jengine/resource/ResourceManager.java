@@ -7,11 +7,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -170,7 +167,7 @@ public class ResourceManager implements IResourceManager {
             }
 
             @Override
-            public Audio getAudio() throws UnsupportedAudioFileException {
+            public Audio getAudio() throws UnsupportedAudioFileException, IOException {
                 return JEngine.getEngine().getAudioManger().audioFromResource(this);
             }
         };

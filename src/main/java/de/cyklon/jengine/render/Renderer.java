@@ -2,6 +2,7 @@ package de.cyklon.jengine.render;
 
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.manager.BaseManager;
+import de.cyklon.jengine.render.sprite.SpriteBaseRenderer;
 import de.cyklon.jengine.util.Pair;
 import de.cyklon.jengine.util.Vector;
 
@@ -13,6 +14,11 @@ public class Renderer {
 
     public static void setup(JEngine engine) {
         Renderer.engine = engine;
+        SpriteBaseRenderer.setup(engine);
+    }
+
+    private Renderer() {
+
     }
 
     private static Pair<int[], int[]> splitVectorArray(Vector[] vecArray) {
