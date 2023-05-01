@@ -2,7 +2,7 @@ package de.cyklon.jengine.resource;
 
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.audio.Audio;
-import de.cyklon.jengine.exeption.UnsupportedFileException;
+import de.cyklon.jengine.exception.UnsupportedFileException;
 import de.cyklon.jengine.render.sprite.Sprite;
 
 import javax.sound.sampled.UnsupportedAudioFileException;

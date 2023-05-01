@@ -1,7 +1,7 @@
 package de.cyklon.jengine.render.sprite;
 
 import de.cyklon.jengine.JEngine;
-import de.cyklon.jengine.exeption.UnsupportedFileException;
+import de.cyklon.jengine.exception.UnsupportedFileException;
 import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.util.FileUtils;
 import de.cyklon.jengine.util.Vector;
