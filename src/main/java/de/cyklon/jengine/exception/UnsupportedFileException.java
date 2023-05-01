@@ -1,4 +1,4 @@
-package de.cyklon.jengine.exeption;
+package de.cyklon.jengine.exception;
 
 import java.io.File;
 
