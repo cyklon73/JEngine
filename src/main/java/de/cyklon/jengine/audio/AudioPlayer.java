@@ -2,6 +2,7 @@ package de.cyklon.jengine.audio;
 
 import de.cyklon.jengine.JEngine;
 import de.cyklon.jengine.resource.Resource;
+import de.cyklon.jengine.util.TryCatch;
 
 import javax.sound.sampled.*;
 import java.io.FileNotFoundException;
@@ -61,11 +62,15 @@ public class AudioPlayer implements AudioManager {
                     SourceDataLine line = AudioSystem.getSourceDataLine(targetFormat);
                     line.open(targetFormat);
 
-                    FloatControl panControl = (FloatControl) line.getControl(FloatControl.Type.PAN);
-                    panControl.setValue(Math.min(Math.max(setting.pan(), panControl.getMinimum()), panControl.getMinimum()));
+                    TryCatch.tryCatch(() -> {
+                        FloatControl panControl = (FloatControl) line.getControl(FloatControl.Type.PAN);
+                        panControl.setValue(Math.min(Math.max(setting.pan(), panControl.getMinimum()), panControl.getMinimum()));
+                    });
 
-                    FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
-                    gainControl.setValue(setting.volume()-30+gainControl.getMaximum());
+                    TryCatch.tryCatch(() -> {
+                        FloatControl gainControl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
+                        gainControl.setValue(setting.volume()-30+gainControl.getMaximum());
+                    });
 
                     line.start();
                     byte[] data = new byte[4096];
