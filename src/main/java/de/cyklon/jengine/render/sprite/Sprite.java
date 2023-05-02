@@ -1,11 +1,9 @@
 package de.cyklon.jengine.render.sprite;
 
 import de.cyklon.jengine.resource.Resource;
-import de.cyklon.jengine.util.Vector;
+import de.cyklon.jengine.math.Vector;
 
-import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public interface Sprite {
 
