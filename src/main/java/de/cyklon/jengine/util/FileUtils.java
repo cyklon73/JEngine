@@ -4,6 +4,11 @@ import java.io.File;
 
 public class FileUtils {
 
+    private FileUtils() {
+
+    }
+
+
     public static String getSuffix(File file) {
         String[] args = file.getName().split("\\.");
         return args[args.length-1];

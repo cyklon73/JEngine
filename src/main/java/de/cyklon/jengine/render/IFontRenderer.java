@@ -1,6 +1,6 @@
 package de.cyklon.jengine.render;
 
-import de.cyklon.jengine.util.Vector;
+import de.cyklon.jengine.math.Vector;
 
 import java.awt.*;
 

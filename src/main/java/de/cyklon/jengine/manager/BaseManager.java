@@ -8,7 +8,7 @@ import de.cyklon.jengine.render.Renderer;
 import de.cyklon.jengine.render.sprite.ISpriteRenderer;
 import de.cyklon.jengine.render.sprite.SpriteBaseRenderer;
 import de.cyklon.jengine.resource.Resource;
-import de.cyklon.jengine.util.Vector;
+import de.cyklon.jengine.math.Vector;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

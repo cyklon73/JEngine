@@ -1,10 +1,9 @@
 package de.cyklon.jengine.render;
 
 import de.cyklon.jengine.JEngine;
-import de.cyklon.jengine.manager.BaseManager;
 import de.cyklon.jengine.render.sprite.SpriteBaseRenderer;
 import de.cyklon.jengine.util.Pair;
-import de.cyklon.jengine.util.Vector;
+import de.cyklon.jengine.math.Vector;
 
 import java.awt.*;
 
