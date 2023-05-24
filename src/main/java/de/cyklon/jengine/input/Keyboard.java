@@ -28,12 +28,24 @@ public class Keyboard {
 
     }
 
+    public static boolean isPressed(Key key) {
+        return isPressed(key.getKeyCode());
+    }
+
     public static boolean isPressed(int keyCode) {
         return keyMap.containsKey(keyCode) && keyMap.get(keyCode)>=0;
     }
 
+    public static boolean isClicked(Key key) {
+        return isClicked(key.getKeyCode());
+    }
+
     public static boolean isClicked(int keyCode) {
         return keyMap.containsKey(keyCode) && keyMap.get(keyCode)==engine.getTickTime();
+    }
+
+    public static boolean isReleased(Key key) {
+        return isReleased(key.getKeyCode());
     }
 
     public static boolean isReleased(int keyCode) {
