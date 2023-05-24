@@ -161,7 +161,9 @@ public class JEngine {
         }
 
         logger.info("init mouse");
-        new Mouse(jEngine.getCursor());
+        Mouse mouse = new Mouse(jEngine, jEngine.getCursor());
+        tickActions.add(mouse.tick());
+        frame.addMouseListener(mouse.inputListener());
 
         logger.info("init ResourceManager");
         resourceManager = ResourceManager.getInstance(jEngine);
