@@ -1,6 +1,7 @@
 package de.cyklon.jengine.gameobject;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.input.Mouse;
 import de.cyklon.jengine.math.Size;
 import de.cyklon.jengine.math.Vector;
 
@@ -21,14 +22,18 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
     private final State state;
     private final long created;
 
-    AbstractGameObject() {
+    protected AbstractGameObject() {
+        this(0, 0, 0, 0);
+    }
+
+    protected AbstractGameObject(double x, double y, double width, double height) {
         this.internalID = UUID.randomUUID();
-        this.position = new Vec(() -> getAttached().forEach((obj) -> obj.getPosition().copy(getPosition())));
+        this.position = new Vec(x, y, () -> getAttached().forEach((obj) -> obj.getPosition().copy(getPosition())));
         this.velocity = new Vector();
         this.attached = new HashMap<>();
         this.attachedBase = null;
         this.layer = Layer.DEFAULT;
-        this.state = new State(0, 0, () -> getAttached().forEach((obj) -> obj.getState().setSize(getState().getSize())), () -> getAttached().forEach((obj) -> obj.getState().setPitch(getState().getPitch())));
+        this.state = new State(width, height, () -> getAttached().forEach((obj) -> obj.getState().setSize(getState().getSize())), () -> getAttached().forEach((obj) -> obj.getState().setPitch(getState().getPitch())));
         this.created = System.currentTimeMillis();
     }
 
@@ -79,6 +84,16 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
     @Override
     public Vector getPosition() {
         return position;
+    }
+
+    @Override
+    public double getX() {
+        return getPosition().getX();
+    }
+
+    @Override
+    public double getY() {
+        return getPosition().getY();
     }
 
     @Override
@@ -179,8 +194,23 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
     }
 
     @Override
+    public double getWidth() {
+        return getState().getSize().getWidth();
+    }
+
+    @Override
+    public double getHeight() {
+        return getState().getSize().getHeight();
+    }
+
+    @Override
     public long getTimeCreated() {
         return created;
+    }
+
+    protected boolean isMouseOver() {
+        Vector pos = Mouse.getCursor().getCursorPositionRelative();
+        return pos.getX() > getX() && pos.getX() < getX()+getWidth() && pos.getY() > getY() && pos.getY() < getY()+getHeight();
     }
 
 

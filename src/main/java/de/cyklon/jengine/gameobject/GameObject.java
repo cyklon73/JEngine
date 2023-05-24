@@ -26,6 +26,10 @@ public interface GameObject {
      */
     public Vector getPosition();
 
+    public double getX();
+
+    public double getY();
+
     /**
      * the returned Vector can be edited
      * @return the current velocity of the gameObject as a Vector
@@ -93,6 +97,8 @@ public interface GameObject {
     public void interpolate(float pitch, boolean inverted);
     public void interpolate(Vector vec);
     public State getState();
+    public double getWidth();
+    public double getHeight();
     public long getTimeCreated();
 
 
