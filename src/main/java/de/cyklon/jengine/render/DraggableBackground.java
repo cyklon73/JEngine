@@ -1,5 +1,7 @@
 package de.cyklon.jengine.render;
 
+import de.cyklon.jengine.input.Mouse;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -26,7 +28,7 @@ public class DraggableBackground extends MouseAdapter {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (enabled && click!=null) {
+        if (enabled && !Mouse.getCursor().isFixed() && click!=null) {
             Point point = MouseInfo.getPointerInfo().getLocation();
             component.setLocation(new Point((int) (point.getX() - click.getX()), (int) (point.getY() - click.getY())));
         }
