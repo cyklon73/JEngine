@@ -30,12 +30,24 @@ public class Mouse {
         return cursor;
     }
 
+    public static boolean isPressed(Button button) {
+        return isPressed(button.getButton());
+    }
+
     public static boolean isPressed(int button) {
         return keyMap.containsKey(button) && keyMap.get(button)>=0;
     }
 
+    public static boolean isClicked(Button button) {
+        return isClicked(button.getButton());
+    }
+
     public static boolean isClicked(int button) {
         return keyMap.containsKey(button) && keyMap.get(button)==engine.getTickTime();
+    }
+
+    public static boolean isReleased(Button button) {
+        return isReleased(button.getButton());
     }
 
     public static boolean isReleased(int button) {
@@ -48,7 +60,6 @@ public class Mouse {
                 while (!keyQueue.isEmpty()) {
                     Pair<Integer, Integer> pair = keyQueue.remove();
                     keyMap.put(pair.getFirst(), engine.getTickTime()*pair.getSecond());
-                    System.out.println(pair.getFirst());
                 }
             }
         };
