@@ -49,4 +49,9 @@ public class Size {
         this.width /= width;
         this.height /= height;
     }
+
+    @Override
+    public Size clone() {
+        return new Size(width, height);
+    }
 }
