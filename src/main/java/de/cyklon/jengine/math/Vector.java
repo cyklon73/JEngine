@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class Vector {
 
+
+
     /**
      * the x and y coordinates of the vector
      */
@@ -75,15 +77,51 @@ public class Vector {
         return new Vector(s[0], s[1]);
     }
 
-    public Vector subtract(Vector vec) {
-        x -= vec.x;
-        y -= vec.y;
+    public Vector add(Vector v) {
+        return add(v.getX(), v.getY());
+    }
+
+    public Vector add(double x, double y) {
+        this.x += x;
+        this.y += y;
         return this;
     }
 
+    public Vector subtract(Vector v) {
+        return subtract(v.getX(), v.getY());
+    }
+
+    public Vector subtract(double x, double y) {
+        this.x -= x;
+        this.y -= y;
+        return this;
+    }
+
+    public Vector times(Vector v) {
+        return subtract(v.getX(), v.getY());
+    }
+
     public Vector times(double n) {
-        x *= n;
-        y *= n;
+        return times(n, n);
+    }
+
+    public Vector times(double x, double y) {
+        this.x *= x;
+        this.y *= y;
+        return this;
+    }
+
+    public Vector divide(Vector v) {
+        return divide(v.getX(), v.getY());
+    }
+
+    public Vector divide(double n) {
+        return divide(n, n);
+    }
+
+    public Vector divide(double x, double y) {
+        this.x /= x;
+        this.y /= y;
         return this;
     }
 
@@ -112,11 +150,6 @@ public class Vector {
         a.add(x);
         a.add(y);
         return a;
-    }
-
-    public void add (Vector v) {
-        x += v.x;
-        y += v.y;
     }
 
     @Override
