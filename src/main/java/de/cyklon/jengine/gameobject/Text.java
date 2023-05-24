@@ -1,7 +1,7 @@
 package de.cyklon.jengine.gameobject;
 
 import de.cyklon.jengine.JEngine;
-import de.cyklon.jengine.font.FontRenderer;
+import de.cyklon.jengine.math.Size;
 import de.cyklon.jengine.math.Vector;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +14,10 @@ public class Text extends AbstractGameObject {
 
     private static JEngine engine;
 
-    private final FontRenderer fontRenderer;
     private String text;
-    private Color color;
+    private Color color, shadowColor, strikethroughColor, underlineColor;
     private Font font;
+    private Alignment alignment;
 
     public Text() {
         this("");
@@ -25,10 +25,13 @@ public class Text extends AbstractGameObject {
 
     public Text(String text) {
         super();
-        this.fontRenderer = new FontRenderer(engine);
         this.text = text;
         this.color = Color.BLACK;
+        this.shadowColor = new Color(0, 0, 0, 0);
+        this.strikethroughColor = new Color(0, 0, 0, 0);
+        this.underlineColor = new Color(0, 0, 0, 0);
         this.font = null;
+        this.alignment = Alignment.LEFT;
     }
 
     public static void engine(JEngine engine) {
@@ -49,11 +52,43 @@ public class Text extends AbstractGameObject {
 
     @Override
     protected void update() {
-        fontRenderer.setColor(color);
-        fontRenderer.setFont(font);
-        fontRenderer.setRotation(getState().getPitch());
+        engine.setFont(font);
+        engine.setRotation(getState().getPitch());
         engine.setRotationPoint(100, 100);
-        JEngine.getEngine().getGraphicsManager().getShapeRenderer().drawLine(new Vector(0, 0), getPosition());
-        fontRenderer.drawString(text, getPosition());
+
+        Vector position = getPosition().clone();
+        Size size = getState().getSize().clone();
+        engine.drawLine((int) position.getX(), (int) position.getY(), (int) position.getX(), (int) (position.getY()-size.getHeight()));
+        engine.drawLine((int) (position.getX()+size.getWidth()), (int) position.getY(), (int) (position.getX()+size.getWidth()), (int) (position.getY()-size.getHeight()));
+        position.add(switch (alignment) {
+            case LEFT -> 0;
+            case CENTERED -> (size.getWidth()/2f)-(stringWidth()/2f);
+            case RIGHT -> getState().getSize().getWidth()-stringWidth();
+        }, 0);
+        int fontSize = font.getSize();
+
+        float factor = fontSize/16f;
+        engine.setRenderColor(shadowColor);
+        engine.drawString(text, (float) position.getX()+factor, (float) position.getY()+factor);
+
+        engine.setRenderColor(color);
+        engine.drawString(text, (float) position.getX(), (float) position.getY());
+
+        int start = (int) (position.getX());
+        int end = (int) (position.getX()+stringWidth());
+        engine.setRenderColor(underlineColor);
+        engine.drawRect(start, (int) (position.getY()+4), end-start, fontSize/10, true);
+        engine.setRenderColor(strikethroughColor);
+        engine.drawRect(start, (int) (position.getY()-fontSize/2.4f), end-start, fontSize/10, true);
+    }
+
+    public int stringWidth() {
+        return engine.getFontMetrics(font==null ? engine.getFont() : font).stringWidth(text);
+    }
+
+    public static enum Alignment {
+        LEFT,
+        CENTERED,
+        RIGHT
     }
 }

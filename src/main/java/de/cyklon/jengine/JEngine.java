@@ -388,10 +388,6 @@ public class JEngine {
         graphics.drawString(str, x, y);
     }
 
-    public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-        graphics.drawString(iterator, x, y);
-    }
-
     public void setFont(Font font) {
         graphics.setFont(font);
     }
