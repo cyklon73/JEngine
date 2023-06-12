@@ -1,6 +1,7 @@
 package de.cyklon.jengine.gameobject;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.gameobject.component.ObjectComponent;
 import de.cyklon.jengine.input.Mouse;
 import de.cyklon.jengine.math.Size;
 import de.cyklon.jengine.math.Vector;
@@ -9,7 +10,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.*;
 
-public abstract class AbstractGameObject implements GameObject, Serializable {
+public abstract class AbstractGameObject implements GameObject, IObjectController, Serializable {
 
     private static JEngine engine;
 
@@ -21,9 +22,16 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
     private Layer layer;
     private final State state;
     private final long created;
+    private final List<AbstractGameObject> localGameObjects;
+    private final ObjectHandler handler;
+    private final Map<Class<? extends ObjectComponent>, ObjectComponent> components;
 
     protected AbstractGameObject() {
         this(0, 0, 0, 0);
+    }
+
+    protected AbstractGameObject(Vector position, Size size) {
+        this(position.getX(), position.getY(), size.getWidth(), size.getHeight());
     }
 
     protected AbstractGameObject(double x, double y, double width, double height) {
@@ -35,14 +43,18 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
         this.layer = Layer.DEFAULT;
         this.state = new State(width, height, () -> getAttached().forEach((obj) -> obj.getState().setSize(getState().getSize())), () -> getAttached().forEach((obj) -> obj.getState().setPitch(getState().getPitch())));
         this.created = System.currentTimeMillis();
+        this.localGameObjects = new ArrayList<>();
+        this.handler = new ObjectHandler(this);
+        this.components = new HashMap<>();
     }
 
-    public abstract void start();
-    public abstract void stop();
+    public abstract void create();
+    public abstract void destroy();
     protected abstract void update();
 
     public void runUpdate() {
         update();
+        localGameObjects.forEach(AbstractGameObject::runUpdate);
     }
 
     public static void engine(JEngine engine) {
@@ -69,6 +81,27 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
 
     private void strictDetach(UUID internalID) {
         if (isAttached(internalID)) ((AbstractGameObject) attached.remove(internalID).getGameObject()).attachedBase = null;
+    }
+
+    protected void registerLocal(GameObject gameObject) {
+        if (gameObject instanceof AbstractGameObject abstractGameObject) {
+            localGameObjects.add(abstractGameObject);
+            abstractGameObject.create();
+        }
+    }
+
+    protected void unregisterLocal(GameObject gameObject) {
+        unregisterLocal(gameObject.getInternalID());
+    }
+
+    protected void unregisterLocal(UUID internalID) {
+        for (int i = 0; i < localGameObjects.size(); i++) {
+            AbstractGameObject abstractGameObject = localGameObjects.get(i);
+            if (abstractGameObject.getInternalID().equals(internalID)) {
+                abstractGameObject.destroy();
+                localGameObjects.remove(i);
+            }
+        }
     }
 
     @Override
@@ -208,11 +241,51 @@ public abstract class AbstractGameObject implements GameObject, Serializable {
         return created;
     }
 
+    @Override
+    public void setController(ObjectController controller) {
+        this.handler.setController(controller);
+    }
+
+    @Override
+    public void addComponent(ObjectComponent component) {
+        components.put(component.getClass(), component);
+    }
+
+    @Override
+    public Collection<ObjectComponent> getComponents() {
+        return components.values();
+    }
+
+    @Override
+    public boolean isComponentPresent(Class<? extends ObjectComponent> clazz) {
+        return components.containsKey(clazz);
+    }
+
+
+    //utility methods
+
     protected boolean isMouseOver() {
         Vector pos = Mouse.getCursor().getCursorPositionRelative();
         return pos.getX() > getX() && pos.getX() < getX()+getWidth() && pos.getY() > getY() && pos.getY() < getY()+getHeight();
     }
 
+
+    //Controller
+
+    @Override
+    public void onCollisionEnter(Collision collision) {
+
+    }
+
+    @Override
+    public void onCollisionStay(Collision collision) {
+
+    }
+
+    @Override
+    public void onCollisionExit(Collision collision) {
+
+    }
 
     private static class AttachdObject {
 

@@ -1,5 +1,6 @@
 package de.cyklon.jengine.gameobject;
 
+import de.cyklon.jengine.gameobject.component.ObjectComponent;
 import de.cyklon.jengine.math.Size;
 import de.cyklon.jengine.math.Vector;
 
@@ -100,6 +101,10 @@ public interface GameObject {
     public double getWidth();
     public double getHeight();
     public long getTimeCreated();
+    public void setController(ObjectController controller);
+    public void addComponent(ObjectComponent component);
+    public Collection<ObjectComponent> getComponents();
+    public boolean isComponentPresent(Class<? extends ObjectComponent> clazz);
 
 
     public static class State {

@@ -6,6 +6,7 @@ import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.event.EventDispatcher;
 import de.cyklon.jengine.gameobject.AbstractGameObject;
 import de.cyklon.jengine.gameobject.GameObject;
+import de.cyklon.jengine.gameobject.Light;
 import de.cyklon.jengine.input.Cursor;
 import de.cyklon.jengine.input.Keyboard;
 import de.cyklon.jengine.input.Mouse;
@@ -30,6 +31,9 @@ import org.apache.logging.log4j.core.config.Configurator;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -379,11 +383,33 @@ public class JEngine {
         return canvas;
     }
 
+    private int decimalToByte(double dec) {
+        return (int) Math.min(255, Math.max(0, Math.round(dec*255)));
+    }
+
+    private void calculateLightning(Graphics2D g) {
+        double darkness = 0.5;
+        Dimension d = getDimension();
+        double width = d.getWidth(), height = d.getHeight();
+        BufferedImage bufferedImage = new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bufferedImage.createGraphics();
+        Rectangle2D rect = new Rectangle2D.Double(0, 0, width, height);
+        Area overlay = new Area(rect);
+        gameObjects.forEach((obj) -> {
+            if (obj instanceof Light light) overlay.subtract(new Area(new Ellipse2D.Double(light.getX()-light.getRadius()/2d, light.getY()-light.getRadius()/2d, light.getRadius(), light.getRadius())));
+        });
+
+        g2d.setColor(new Color(0, 0, 0, decimalToByte(darkness)));
+        g2d.fill(overlay);
+        g.drawImage(bufferedImage, 0, 0, null);
+    }
+
     public void setGraphics(Graphics2D g) {
         graphics.dispose();
         graphics = g;
         canvas.loop();
         updateGameObjects();
+        calculateLightning(g);
     }
 
     public void drawString(String str, float x, float y) {

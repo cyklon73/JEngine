@@ -1,33 +1,35 @@
 package de.cyklon.jengine.gameobject;
 
 import de.cyklon.jengine.JEngine;
-import de.cyklon.jengine.gameobject.AbstractGameObject;
-import de.cyklon.jengine.input.Keyboard;
 import de.cyklon.jengine.input.Mouse;
 import de.cyklon.jengine.manager.GraphicsManager;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
 public class Button extends AbstractGameObject {
 
     private final ActionListener onClickListener;
     private final GraphicsManager graphicsManager;
+    private final Text text;
 
-    public Button(int x, int y, int width, int height, ActionListener onClickListener) {
+    public Button(String text, int x, int y, int width, int height, ActionListener onClickListener) {
         super(x, y, width, height);
         this.onClickListener = onClickListener;
         this.graphicsManager = JEngine.getEngine().getGraphicsManager();
+        this.text = new Text(text, x-5, y+3, width, height);
+        this.text.setAlignment(Text.Alignment.CENTERED);
+        this.text.setFont(new Font("Arial", Font.BOLD, (int) (Math.min(width, height)/1.5f)));
+        registerLocal(this.text);
     }
 
     @Override
-    public void start() {
+    public void create() {
 
     }
 
     @Override
-    public void stop() {
+    public void destroy() {
 
     }
 

@@ -24,7 +24,17 @@ public class Text extends AbstractGameObject {
     }
 
     public Text(String text) {
-        super();
+        this(text, 0, 0);
+    }
+
+    public Text(String text, double x, double y) {
+        this(text, x, y, 0, 0);
+    }
+
+    public Text(String text, double x, double y, double width, double height) {
+        super(x, y, 0, 0);
+        this.getPosition().add(x, y);
+        this.getState().getSize().add(width, height);
         this.text = text;
         this.color = Color.BLACK;
         this.shadowColor = new Color(0, 0, 0, 0);
@@ -41,12 +51,12 @@ public class Text extends AbstractGameObject {
 
 
     @Override
-    public void start() {
+    public void create() {
 
     }
 
     @Override
-    public void stop() {
+    public void destroy() {
 
     }
 
@@ -58,8 +68,6 @@ public class Text extends AbstractGameObject {
 
         Vector position = getPosition().clone();
         Size size = getState().getSize().clone();
-        engine.drawLine((int) position.getX(), (int) position.getY(), (int) position.getX(), (int) (position.getY()-size.getHeight()));
-        engine.drawLine((int) (position.getX()+size.getWidth()), (int) position.getY(), (int) (position.getX()+size.getWidth()), (int) (position.getY()-size.getHeight()));
         position.add(switch (alignment) {
             case LEFT -> 0;
             case CENTERED -> (size.getWidth()/2f)-(stringWidth()/2f);

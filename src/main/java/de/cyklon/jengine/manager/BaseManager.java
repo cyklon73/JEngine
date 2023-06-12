@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-public class BaseManager {
+public final class BaseManager {
 
     private static JEngine engine;
 
@@ -24,7 +24,7 @@ public class BaseManager {
     }
 
 
-    public static class IGraphicsManager implements GraphicsManager {
+    public static final class IGraphicsManager implements GraphicsManager {
 
         @Override
         public boolean useVsync() {
@@ -97,7 +97,7 @@ public class BaseManager {
         }
     }
 
-    public static class IWindowManager implements WindowManager {
+    public static final class IWindowManager implements WindowManager {
 
         @Override
         public void setDimension(Dimension dimension) {
@@ -192,7 +192,7 @@ public class BaseManager {
         }
     }
 
-    public static class IEventManager implements EventManager {
+    public static final class IEventManager implements EventManager {
 
         @Override
         public void registerEvents(Event event) {
