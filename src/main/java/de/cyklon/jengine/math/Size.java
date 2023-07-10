@@ -4,6 +4,10 @@ public class Size {
 
     private double width, height;
 
+    public Size() {
+        this(0, 0);
+    }
+
     public Size(double width, double height) {
         this.width = width;
         this.height = height;
