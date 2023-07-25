@@ -10,16 +10,22 @@ import de.cyklon.jengine.gameobject.Light;
 import de.cyklon.jengine.input.Cursor;
 import de.cyklon.jengine.input.Keyboard;
 import de.cyklon.jengine.input.Mouse;
-import de.cyklon.jengine.render.*;
-import de.cyklon.jengine.render.Canvas;
+import de.cyklon.jengine.math.Vector;
+import de.cyklon.jengine.render.EmptyGraphics;
 import de.cyklon.jengine.render.Frame;
+import de.cyklon.jengine.render.JEngineIcon;
 import de.cyklon.jengine.render.Panel;
+import de.cyklon.jengine.render.canvas.Canvas;
+import de.cyklon.jengine.render.canvas.DefaultCanvas;
+import de.cyklon.jengine.render.canvas.DefaultSplash;
+import de.cyklon.jengine.render.canvas.SplashCanvas;
+import de.cyklon.jengine.render.sprite.Sprite;
+import de.cyklon.jengine.render.sprite.SpriteBaseRenderer;
 import de.cyklon.jengine.resource.IResourceManager;
 import de.cyklon.jengine.resource.Resource;
 import de.cyklon.jengine.resource.ResourceManager;
 import de.cyklon.jengine.util.FinalObject;
 import de.cyklon.jengine.util.Task;
-import de.cyklon.jengine.math.Vector;
 import de.cyklon.jengine.util.TryCatch;
 import lombok.Getter;
 import org.apache.logging.log4j.Level;
@@ -40,11 +46,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.text.AttributedCharacterIterator;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class JEngine {
+
+    public static final String VERSION = "1.0.3";
 
     private static boolean vsync = false;
     private static final FinalObject<Boolean> initalized = new FinalObject<>(2, false);
@@ -63,12 +70,17 @@ public class JEngine {
     @Getter
     private static String name;
     private static Frame frame;
+    private static Frame bFrame;
     private static EventDispatcher eventDispatcher;
     private static Logger logger;
     private static IResourceManager resourceManager;
     private static Configuration configuration;
     private static Canvas canvas;
     private static boolean canvasInitalized;
+
+    private static boolean undecorated;
+    private static Dimension dimension;
+    private static boolean visible;
 
     private static long tickTime;
     private static List<ActionListener> tickActions;
@@ -103,7 +115,7 @@ public class JEngine {
         logger = LogManager.getLogger(gameClass);
         ClassLoader classLoader = JEngine.class.getClassLoader();
         LoggerContext context = Configurator.initialize(gameClass.getSimpleName(), classLoader, classLoader.getResource("log4j.xml").toURI());
-        context.getConfiguration().getLoggerConfig(logger.getName()).setLevel((Level) configuration.get("log.level"));
+        context.getConfiguration().getLoggerConfig(logger.getName()).setLevel(configuration.get("log.level", Level.class));
         context.updateLoggers();
         logger.info("init JEngine");
         tickTime = 0;
@@ -128,10 +140,13 @@ public class JEngine {
 
         logger.info("init frame");
         frame = new Frame();
-        setNameLocal(configuration.getString("name"));
+        setNameLocal(configuration.get("name", String.class));
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Panel panel = new Panel(jEngine);
         frame.add(panel);
+        undecorated = frame.isUndecorated();
+        dimension = frame.getSize();
+        visible = frame.isVisible();
 
         //frame.addMouseMotionListener(mouseAdapter());
         //frame.addMouseListener(mouseAdapter());
@@ -178,12 +193,16 @@ public class JEngine {
         gameThread.get().start();
         logger.info("initialization complete");
         initalized.set(true);
+
+        logger.info("splash starting");
+        jEngine.setCanvas(new Splash(configuration.get("splash", SplashCanvas.class)));
     }
 
     private static Configuration getDefaultConfiguration() {
         Configuration defaultConfiguration = new Configuration();
         defaultConfiguration.configure("name", gameClass.getSimpleName());
         defaultConfiguration.configure("log.level", Level.ALL);
+        defaultConfiguration.configure("splash", new DefaultSplash());
         return defaultConfiguration;
     }
 
@@ -311,6 +330,7 @@ public class JEngine {
         check();
         frame.setSize(dimension);
         frame.setPreferredSize(dimension);
+        JEngine.dimension = dimension;
     }
 
     public Vector getLocation() {
@@ -326,6 +346,7 @@ public class JEngine {
     public void setVisible(boolean visible) {
         check();
         frame.setVisible(visible);
+        JEngine.visible = visible;
     }
 
     public boolean isVisible() {
@@ -356,6 +377,7 @@ public class JEngine {
     public void hideTitleBar(boolean hiding) {
         check();
         frame.setUndecorated(hiding);
+        JEngine.undecorated = hiding;
     }
 
     public boolean isTitleBarHidden() {
@@ -507,6 +529,42 @@ public class JEngine {
         return frame.getMinimumSize();
     }
 
+    public void setFullscreen(boolean fullscreen) {
+        check();
+        if (fullscreen) {
+            bFrame = new Frame();
+            copy(frame, bFrame);
+        }
+        frame.setVisible(false);
+        frame.dispose();
+        Frame nFrame = new Frame();
+        copy(bFrame, nFrame);
+        frame = nFrame;
+        frame.setUndecorated(fullscreen || undecorated);
+        frame.setVisible(visible);
+        getScreen().setFullScreenWindow(fullscreen ? frame : null);
+    }
+
+    private void copy(Frame source, Frame target) {
+        target.setTitle(source.getTitle());
+        target.setBounds(source.getBounds());
+        target.setExtendedState(source.getExtendedState());
+        target.setDefaultCloseOperation(source.getDefaultCloseOperation());
+        target.setIconImage(source.getIconImage());
+        target.setResizable(source.isResizable());
+        target.setUndecorated(source.isUndecorated());
+        target.setMinimumSize(source.getMinimumSize());
+        target.setMaximumSize(source.getMaximumSize());
+        target.setDraggableBackground(source.isBackgroundDraggable());
+        target.setBackground(source.getBackground());
+        target.setForeground(source.getForeground());
+        for (Component component : source.getComponents()) target.add(component);
+        for (MouseMotionListener mouseMotionListener : source.getMouseMotionListeners()) target.addMouseMotionListener(mouseMotionListener);
+        for (MouseWheelListener mouseWheelListener : source.getMouseWheelListeners()) target.addMouseWheelListener(mouseWheelListener);
+        for (MouseListener mouseListener : source.getMouseListeners()) target.addMouseListener(mouseListener);
+        for (KeyListener keyListener : source.getKeyListeners()) target.addKeyListener(keyListener);
+    }
+
     public void dispose() {
         check();
         frame.dispose();
@@ -655,5 +713,36 @@ public class JEngine {
                 return cursorFixed;
             }
         };
+    }
+
+    private static final class Splash extends Canvas {
+
+        private final SplashCanvas sc;
+
+        public Splash(SplashCanvas sc) {
+            this.sc = sc;
+        }
+
+        private JEngineIcon getIcon() {
+            return sc.initJEngineIcon();
+        }
+
+        private Sprite getSpriteIcon() {
+            return null;
+        }
+
+        @Override
+        public void init() {
+            super.init();
+            sc.init();
+        }
+
+        @Override
+        public void loop() {
+            super.loop();
+            sc.loop();
+            //SpriteBaseRenderer
+            //getEngine().getResourceManager().getResource("").getSprite()
+        }
     }
 }

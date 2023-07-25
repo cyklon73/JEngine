@@ -7,7 +7,7 @@ import de.cyklon.jengine.math.Vector;
 
 import java.awt.*;
 
-public class Renderer {
+public final class Renderer {
 
     private static JEngine engine;
 

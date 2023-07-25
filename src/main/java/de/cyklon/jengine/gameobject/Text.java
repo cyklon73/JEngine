@@ -71,7 +71,7 @@ public class Text extends AbstractGameObject {
         position.add(switch (alignment) {
             case LEFT -> 0;
             case CENTERED -> (size.getWidth()/2f)-(stringWidth()/2f);
-            case RIGHT -> getState().getSize().getWidth()-stringWidth();
+            case RIGHT -> getState().getSize().getWidth() - stringWidth();
         }, 0);
         int fontSize = font.getSize();
 

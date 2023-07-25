@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class DraggableBackground extends MouseAdapter {
+final class DraggableBackground extends MouseAdapter {
 
     private boolean enabled;
     private Point click;

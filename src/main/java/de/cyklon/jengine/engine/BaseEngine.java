@@ -1,16 +1,19 @@
 package de.cyklon.jengine.engine;
 
 import de.cyklon.jengine.JEngine;
+import de.cyklon.jengine.audio.AudioManager;
 import de.cyklon.jengine.audio.AudioPlayer;
 import de.cyklon.jengine.event.Event;
-import de.cyklon.jengine.audio.AudioManager;
 import de.cyklon.jengine.manager.BaseManager;
 import de.cyklon.jengine.manager.EventManager;
 import de.cyklon.jengine.manager.GraphicsManager;
-import de.cyklon.jengine.render.Canvas;
 import de.cyklon.jengine.render.Renderer;
+import de.cyklon.jengine.render.canvas.Canvas;
 import de.cyklon.jengine.resource.IResourceManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.net.URISyntaxException;
 
 public class BaseEngine implements Engine {
 
@@ -67,4 +70,13 @@ public class BaseEngine implements Engine {
         return new BaseManager.IEventManager();
     }
 
+    @Override
+    public File getWorkingDirectory() {
+        try {
+            File dir = new File(engine.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+            if (dir.isDirectory()) return dir;
+            return dir.getParentFile();
+        } catch (URISyntaxException ignored) {}
+        return new File("");
+    }
 }

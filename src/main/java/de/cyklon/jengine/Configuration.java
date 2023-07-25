@@ -20,77 +20,8 @@ public class Configuration {
         return configMap.get(property);
     }
 
-    public Integer getInteger(String property) {
-        return (Integer) get(property);
-    }
-
-    public Double getDouble(String property) {
-        return (Double) get(property);
-    }
-
-    public Float getFloat(String property) {
-        return (Float) get(property);
-    }
-
-    public Long getLong(String property) {
-        return (Long) get(property);
-    }
-
-    public Short getShort(String property) {
-        return (Short) get(property);
-    }
-
-    public Byte getByte(String property) {
-        return (Byte) get(property);
-    }
-
-    public Character getCharacter(String property) {
-        return (Character) get(property);
-    }
-    public String getString(String property) {
-        return (String) get(property);
-    }
-    public Boolean getBoolean(String property) {
-        return (Boolean) get(property);
-    }
-
-
-    public Object[] getArray(String property) {
-        return (Object[]) configMap.get(property);
-    }
-
-    public Integer[] getIntegerArray(String property) {
-        return (Integer[]) get(property);
-    }
-
-    public Double[] getDoubleArray(String property) {
-        return (Double[]) get(property);
-    }
-
-    public Float[] getFloatArray(String property) {
-        return (Float[]) get(property);
-    }
-
-    public Long[]getLongArray(String property) {
-        return (Long[]) get(property);
-    }
-
-    public Short[] getShortArray(String property) {
-        return (Short[]) get(property);
-    }
-
-    public Byte[] getByteArray(String property) {
-        return (Byte[]) get(property);
-    }
-
-    public Character[] getCharacterArray(String property) {
-        return (Character[]) get(property);
-    }
-    public String[] getStringArray(String property) {
-        return (String[]) get(property);
-    }
-    public Boolean[] getBooleanArray(String property) {
-        return (Boolean[]) get(property);
+    public <T> T get(String property, Class<T> type) {
+        return type.cast(get(property));
     }
 
     public void mergeDefault(Configuration def) {

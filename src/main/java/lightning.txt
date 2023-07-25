@@ -1,0 +1,3 @@
+.setDarkness(double (0-1)) 0-1 -> 0 - 255 alpha for overlay
+
+Light GameObject modifiers -> brightness = 0 - 255 (0-1) -> radius = radius of light -> light color

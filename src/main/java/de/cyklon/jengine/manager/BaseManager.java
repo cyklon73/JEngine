@@ -190,6 +190,11 @@ public final class BaseManager {
             double w1 = d1.getWidth(), h1 = d1.getHeight(), w2 = d2.getWidth(), h2 = d2.getHeight();
             setLocation(new Vector(w1/2-w2/2, h1/2-h2/2));
         }
+
+        @Override
+        public void setFullscreen(boolean fullscreen) {
+            engine.setFullscreen(fullscreen);
+        }
     }
 
     public static final class IEventManager implements EventManager {

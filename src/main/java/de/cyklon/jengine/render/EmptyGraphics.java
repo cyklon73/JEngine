@@ -13,7 +13,7 @@ import java.text.AttributedCharacterIterator;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EmptyGraphics extends Graphics2D {
+public final class EmptyGraphics extends Graphics2D {
     @Override
     public void draw(Shape s) {
 

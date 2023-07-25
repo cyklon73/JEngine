@@ -2,9 +2,10 @@ package de.cyklon.jengine.math;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Vector {
+public class Vector implements Cloneable, Serializable {
 
 
 
@@ -13,17 +14,51 @@ public class Vector {
      */
     private double x, y;
 
+    /**
+     * Default constructor - x/y initialised to zero.
+     */
     public Vector() {
         this(0, 0);
     }
 
+    /**
+     * Point to Vector Constructor.
+     *
+     * @param point Sets the x and y value.
+     */
     public Vector(Point2D point) {
         this(point.getX(), point.getY());
     }
 
+    /**
+     * Constructor.
+     *
+     * @param x Sets x value.
+     * @param y Sets y value.
+     */
     public Vector(double x, double y) {
         this.x = x;
         this.y = y;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param vec Vector to copy.
+     */
+    public Vector(Vector vec) {
+        this.x = vec.getX();
+        this.y = vec.getY();
+    }
+
+    /**
+     * Constructs a normalised direction vector.
+     *
+     * @param direction Direction in radians.
+     */
+    public Vector(double direction) {
+        this.x = Math.cos(direction);
+        this.y = Math.sin(direction);
     }
 
     /**
@@ -138,6 +173,24 @@ public class Vector {
         return Math.acos(clone().normalize().scalar(vec.clone().normalize()));
     }
 
+    /**
+     * Finds cross product between two vectors.
+     *
+     * @param v Other vector to apply cross product to
+     * @return double
+     */
+    public double crossProduct(Vector v) {
+        return this.x * v.y - this.y * v.x;
+    }
+
+    public Vector crossProduct(double a) {
+        return this.normal().scalar(a);
+    }
+
+    public Vector scalar(double a) {
+        return new Vector(x * a, y * a);
+    }
+
     public Vector normalize() {
         double length = length();
         x /= length;
@@ -154,12 +207,24 @@ public class Vector {
 
     @Override
     public Vector clone () {
-        return new Vector(x, y);
+        return new Vector(this);
     }
 
     public Vector copy(Vector v) {
         x = v.x;
         y = v.y;
+        return this;
+    }
+
+    public Vector set(double x, double y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+    public Vector set(int x, int y) {
+        this.x = x;
+        this.y = y;
         return this;
     }
 
@@ -194,7 +259,143 @@ public class Vector {
     }
 
     public double length() {
-        return Math.sqrt(Math.sqrt(x) + Math.sqrt(y));
+        return StrictMath.sqrt(Maths.square(x) + Maths.square(y));
+    }
+
+    /**
+     * Negates the current instance vector and return this.
+     *
+     * @return Return the negative form of the instance vector.
+     */
+    public Vector negative() {
+        this.x = -x;
+        this.y = -y;
+        return this;
+    }
+
+    /**
+     * Negates the current instance vector and return this.
+     *
+     * @return Returns a new negative vector of the current instance vector.
+     */
+    public Vector negativeVec() {
+        return new Vector(-x, -y);
+    }
+
+    /**
+     * Static method for any cross product, same as
+     *
+     * @param s double.
+     * @param a Vectors2D.
+     * @return Cross product scalar result.
+     */
+    public static Vector cross(Vector a, double s) {
+        return new Vector(s * a.y, -s * a.x);
+    }
+
+    /**
+     * Finds the cross product of a scalar and a vector. Produces a scalar in 2D.
+     *
+     * @param s double.
+     * @param a Vectors2D.
+     * @return Cross product scalar result.
+     */
+    public static Vector cross(double s, Vector a) {
+        return new Vector(-s * a.y, s * a.x);
+    }
+
+    /**
+     * Finds dotproduct between two vectors.
+     *
+     * @param v Other vector to apply dotproduct to.
+     * @return double
+     */
+    public double dotProduct(Vector v) {
+        return v.getX() * this.x + v.getY() * this.y;
+    }
+
+    /**
+     * Finds the normalised version of a vector and returns a new vector of it.
+     *
+     * @return A normalized vector of the current instance vector.
+     */
+    public Vector getNormalized() {
+        double d = StrictMath.sqrt(x * x + y * y);
+
+        if (d == 0) {
+            d = 1;
+        }
+        return new Vector(x / d, y / d);
+    }
+
+    /**
+     * Checks to see if a vector has valid values set for x and y.
+     *
+     * @return boolean value whether a vector is valid or not.
+     */
+    public final boolean isValid() {
+        return !Double.isNaN(x) && !Double.isInfinite(x) && !Double.isNaN(y) && !Double.isInfinite(y);
+    }
+
+    /**
+     * Checks to see if a vector is set to (0,0).
+     *
+     * @return boolean value whether the vector is set to (0,0).
+     */
+    public boolean isZero() {
+        return Math.abs(this.x) == 0 && Math.abs(this.y) == 0;
+    }
+
+
+    /**
+     * Adds a vector and the current instance vector together and returns a new vector of them added together.
+     *
+     * @param v Vector to add.
+     * @return Returns a new Vectors2D of the sum of the addition of the two vectors.
+     */
+    public Vector addi(Vector v) {
+        return new Vector(x + v.x, y + v.y);
+    }
+
+    /**
+     * Generates a normal of a vector. Normal facing to the right clock wise 90 degrees.
+     *
+     * @return A normal of the current instance vector.
+     */
+    public Vector normal() {
+        return new Vector(-y, x);
+    }
+
+    /**
+     * @param v the other Vector
+     * @return the Relative Position from the other Vector to this Vector
+     * @see Maths
+     */
+    public Vector relativ(Vector v) {
+        return Maths.relative(this, v);
+    }
+
+    /**
+     * @param v the other Vector
+     * @return the distance between this and the other Vector
+     * @see Maths
+     */
+    public double distance(Vector v) {
+        return Maths.distance(this, v);
+    }
+
+    /**
+     * Generates an array of length n with zero initialised vectors.
+     *
+     * @param n Length of array.
+     * @return A Vectors2D array of zero initialised vectors.
+     */
+    public static Vector[] createArray(int n) {
+        Vector[] array = new Vector[n];
+        for (Vector v : array) {
+            v = new Vector();
+        }
+        return array;
     }
 
     private static class VecPoint extends java.awt.Point {

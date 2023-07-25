@@ -106,4 +106,5 @@ public interface WindowManager {
     Dimension getMinSize();
 
     void setToCenter();
+    void setFullscreen(boolean fullscreen);
 }

@@ -4,9 +4,12 @@ import de.cyklon.jengine.event.Event;
 import de.cyklon.jengine.audio.AudioManager;
 import de.cyklon.jengine.manager.EventManager;
 import de.cyklon.jengine.manager.GraphicsManager;
-import de.cyklon.jengine.render.Canvas;
+import de.cyklon.jengine.render.canvas.Canvas;
+import de.cyklon.jengine.render.canvas.SplashCanvas;
 import de.cyklon.jengine.resource.IResourceManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 public interface Engine {
 
@@ -64,5 +67,11 @@ public interface Engine {
      * @return the EventManager to register events
      */
     EventManager getEventManager();
+
+
+    /**
+     * @return the directory where the game files are saved
+     */
+    File getWorkingDirectory();
 
 }

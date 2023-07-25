@@ -5,7 +5,7 @@ import de.cyklon.jengine.JEngine;
 import javax.swing.*;
 import java.awt.*;
 
-public class Panel extends JPanel {
+public final class Panel extends JPanel {
 
     private final JEngine engine;
 

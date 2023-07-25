@@ -5,8 +5,37 @@ import java.util.Random;
 
 public class Maths {
 
-    public static double distance(double d1, double d2) {
+    public static double range(double d1, double d2) {
         return Math.max(d1, d2) - Math.min(d1, d2);
+    }
+
+    public static double square(double d) {
+        return d*d;
+    }
+
+    /**
+     * use instead {@link Vector#relativ(Vector)}
+     * @param v1 first Vector
+     * @param v2 second Vector
+     * @return the Relative Position from the second Vector to the first Vector
+     * @see Vector
+     */
+    @Deprecated
+    public static Vector relative(Vector v1, Vector v2) {
+        return new Vector(v1.getX()-v2.getX(), v1.getY()-v2.getY());
+    }
+
+    /**
+     * use instead {@link Vector#distance(Vector)}
+     * @param v1 first Vector
+     * @param v2 second Vector
+     * @return the distance between the first and the second Vector
+     * @see Vector
+     */
+    @Deprecated
+    public static double distance(Vector v1, Vector v2) {
+        Vector v = relative(v1, v2);
+        return StrictMath.sqrt(square(v.getX())+square(v.getY()));
     }
 
     public static double random() {
@@ -14,7 +43,7 @@ public class Maths {
     }
 
     public static double randomDouble(double min, double max) {
-        return random()*distance(min, max)+min;
+        return random()* range(min, max)+min;
     }
 
     public static double randomDouble(double max) {
@@ -22,7 +51,7 @@ public class Maths {
     }
 
     public static float randomFloat(float min, float max) {
-        return (float) (random()*distance(min, max)+min);
+        return (float) (random()* range(min, max)+min);
     }
 
     public static float randomFloat(float max) {
@@ -30,7 +59,7 @@ public class Maths {
     }
 
     public static long randomLong(long min, long max) {
-        return (long) (random()*distance(min, max)+min);
+        return (long) (random()* range(min, max)+min);
     }
 
     public static long randomLong(long max) {
@@ -38,7 +67,7 @@ public class Maths {
     }
 
     public static int randomInt(int min, int max) {
-        return (int) (random()*(distance(min, max)+1)+min);
+        return (int) (random()*(range(min, max)+1)+min);
     }
 
     public static int randomInt(int max) {
